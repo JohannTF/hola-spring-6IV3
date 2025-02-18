@@ -1,6 +1,6 @@
 # 🛠️ Tarea 1. Herramientas para el desarrollo de software
 
-> [!IMPORTANT] Sobre las evidencias...
+> [!IMPORTANT]
 > Las capturas de pantalla de las evidencias se encuentran en la carpeta `screenshots`
 
 ## 🎯 Objetivo
