@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 import escom.ipn.hola_spring_6IV3.service.JwtService;
+import lombok.RequiredArgsConstructor;
 
 /* 
 UserDetailsService:
@@ -29,21 +30,17 @@ PasswordEncoder:
 */
 
 @Configuration
+@RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
     @SuppressWarnings("unused")
     private final JwtService jwtService;
 
-    public ApplicationConfig(UserRepository userRepository, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.jwtService = jwtService;
-    }
-
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     @Bean
