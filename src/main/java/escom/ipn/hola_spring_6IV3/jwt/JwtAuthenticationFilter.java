@@ -19,6 +19,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+// Se encarga de validar el token en cada petición a rutas protegidas. E
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

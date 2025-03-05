@@ -71,8 +71,19 @@ public class JwtTokenProvider {
     public String extractUsername(String token){
         return extractClaims(token).getSubject();
     }
+    
+    // Método para extraer toda la información del token
+    public Map<String, Object> extractAllInfo(String token) {
+        Claims claims = extractClaims(token);
+        Map<String, Object> info = new HashMap<>();
+        info.put("username", claims.getSubject());
+        info.put("issuedAt", claims.getIssuedAt());
+        info.put("expiration", claims.getExpiration());
+        info.putAll(claims);
+        return info;
+    }
 
-    // Método para validaar el token
+    // Método para validar el token
     public boolean isTokenValid(String token, UserDetails user) {
         try {
             final String username = extractUsername(token);
@@ -81,6 +92,4 @@ public class JwtTokenProvider {
             return false;
         }
     }
-    
-
 }

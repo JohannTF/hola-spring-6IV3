@@ -13,13 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 // Genera un constructor con un argumento para cada campo en la clase
 @AllArgsConstructor
-public class RegisterRequest {
-    
+public class UserDto {
     private String username;
     private String password;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     private String country;
     private String role;
-    
 }

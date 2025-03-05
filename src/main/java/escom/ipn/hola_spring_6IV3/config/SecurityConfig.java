@@ -31,7 +31,8 @@ public class SecurityConfig {
         // Permitir acceso a todoas las rutas que comiencen con "/auth/**"
             .authorizeHttpRequests(authRequest -> 
                 authRequest
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/login", "/register", "/auth/login", "/auth/register", "/view/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
         // Configurar la politica de sesiones (STATELESS)

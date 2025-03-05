@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import escom.ipn.hola_spring_6IV3.dtos.LoginRequest;
 import escom.ipn.hola_spring_6IV3.dtos.RegisterRequest;
+import escom.ipn.hola_spring_6IV3.dtos.JwtResponse;
 import escom.ipn.hola_spring_6IV3.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +23,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         try {
-            return ResponseEntity.ok(authService.registerUser(request));
+            authService.registerUser(request);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
@@ -30,11 +32,12 @@ public class AuthController {
 
     // Login de usuario con manejo de excepciones
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> loginUser(@RequestBody LoginRequest request) {
         try {
-            return ResponseEntity.ok(authService.loginUser(request));
+            JwtResponse jwtResponse = authService.loginUser(request);
+            return ResponseEntity.ok(jwtResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Error: " + e.getMessage());
+            return ResponseEntity.status(401).body(null);
         }
     }
 }

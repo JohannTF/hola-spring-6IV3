@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Inicio</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      h1 {
+        color: #333;
+      }
+      button {
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      form {
+        margin-top: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+      input {
+        padding: 8px;
+        width: 100%;
+        margin-bottom: 12px;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "/login";
+          return;
+        }
+
+        // Realiza la petición al nuevo endpoint para obtener la información del usuario
+        fetch(`/api/info`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        )
+          .then(response => {
+            if (!response.ok) throw new Error("No autorizado");
+            return response.json();
+          })
+          .then(data => {
+            console.log(data);
+            const user = data.usuario;
+            document.getElementById("username").textContent = user.username;
+            document.getElementById("username-input").value = user.username;
+            document.getElementById("firstname").value = user.firstname;
+            document.getElementById("lastname").value = user.lastname;
+            document.getElementById("country").value = user.country;
+            document.getElementById("token-info").textContent = "Token válido";
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            window.location.href = "/login";
+          });
+
+        // Manejar el cierre de sesión
+        document.getElementById("logout").addEventListener("click", () => {
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        });
+
+        // Manejar la actualización de los datos del usuario
+        document.getElementById("update-form").addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          const updatedUser = {
+            username: document.getElementById("username-input").value,
+            firstname: document.getElementById("firstname").value,
+            lastname: document.getElementById("lastname").value,
+            country: document.getElementById("country").value
+          };
+
+          fetch(`/api/update`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updatedUser)
+          })
+          .then(response => {
+            if (!response.ok) throw new Error("Error al actualizar los datos");
+            return response.json();
+          })
+          .then(data => {
+            console.log("Datos actualizados:", data);
+            alert("Datos actualizados correctamente");
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            alert("Error al actualizar los datos");
+          });
+        });
+
+        // Añadir el manejo del botón para navegar a /view/admin/all-users
+        document.getElementById("admin-page").addEventListener("click", () => {
+          window.location.href = "/view/admin/all-users";
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Bienvenido, <span id="username"></span></h1>
+      <button id="logout">Cerrar sesión</button>
+    </header>
+    <section>
+      <form id="update-form">
+        <label for="username-input">Nombre de usuario:</label>
+        <input type="text" id="username-input" name="username" required />
+        
+        <label for="firstname">Nombre:</label>
+        <input type="text" id="firstname" name="firstname" required />
+        
+        <label for="lastname">Apellido:</label>
+        <input type="text" id="lastname" name="lastname" required />
+        
+        <label for="country">País:</label>
+        <input type="text" id="country" name="country" required />
+        
+        <button type="submit">Aceptar</button>
+      </form>
+      <p>Información del token: <span id="token-info"></span></p>
+      <button id="admin-page">Ir a la página de administración</button>
+    </section>
+  </body>
+</html>
