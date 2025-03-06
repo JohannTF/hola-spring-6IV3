@@ -26,7 +26,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-// Método para registrar un nuevo usuario
+    // Método para registrar un nuevo usuario
     public JwtResponse registerUser(RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("El nombre de usuario ya está en uso.");
@@ -54,7 +54,7 @@ public class AuthService {
             .build();
     }
 
-// Método para autenticar usuario y generar JWT
+    // Método para autenticar usuario y generar JWT
     public JwtResponse loginUser(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
