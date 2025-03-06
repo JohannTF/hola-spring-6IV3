@@ -11,6 +11,7 @@ import escom.ipn.hola_spring_6IV3.dtos.LoginRequest;
 import escom.ipn.hola_spring_6IV3.dtos.RegisterRequest;
 import escom.ipn.hola_spring_6IV3.model.Role;
 import escom.ipn.hola_spring_6IV3.model.User;
+import escom.ipn.hola_spring_6IV3.repository.RoleRepository;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class AuthService {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
@@ -30,6 +32,10 @@ public class AuthService {
             throw new RuntimeException("El nombre de usuario ya está en uso.");
         }
 
+        // Obtener el rol correspondiente
+        Role role = roleRepository.findByName("ROLE_" + request.getRole().toUpperCase())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
         // Crear el nuevo usuario
         User user = User.builder()
             .username(request.getUsername())
@@ -37,12 +43,12 @@ public class AuthService {
             .firstname(request.getFirstName())
             .lastname(request.getLastName())
             .country(request.getCountry())
-            .role(Role.USER)
+            .role(role)
             .build();
 
         // Guardar el usuario en la BD
         userRepository.save(user);
-
+        
         return JwtResponse.builder()
             .token(jwtService.getToken(user))
             .build();
@@ -51,15 +57,10 @@ public class AuthService {
     // Método para autenticar usuario y generar JWT
     public JwtResponse loginUser(LoginRequest request) {
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-
-        UserDetails user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        UserDetails user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         String token = jwtService.getToken(user);
-
-        return JwtResponse.builder()
-            .token(token)
-            .build();
+        return new JwtResponse(token);
     }
 }

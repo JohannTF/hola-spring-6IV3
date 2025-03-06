@@ -1,0 +1,45 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: johann21
+      MYSQL_DATABASE: tarea2
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./src/main/resources/schemas.sql:/docker-entrypoint-initdb.d/schemas.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spring-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-app
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tarea2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: johann21
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    networks:
+      - spring-network
+
+volumes:
+  mysql-data:
+
+networks:
+  spring-network:
+    driver: bridge
