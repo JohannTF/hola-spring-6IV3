@@ -267,7 +267,7 @@ To run the application, you need:
 1. Java 21 or higher
 2. MySQL database
 
-Configure your database connection in the `application.properties` file:
+Configure your database connection in a `.env` file:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name?useSSL=false&serverTimezone=UTC
@@ -288,108 +288,10 @@ Or build and run the JAR file:
 java -jar build/libs/your-application-name.jar
 ```
 
-## Docker Deployment
-
-For Docker deployment, you can use the following Dockerfile:
-
-```dockerfile
-FROM openjdk:21-jdk AS builder
-
-WORKDIR /app
-
-RUN microdnf install findutils
-
-COPY build.gradle settings.gradle gradlew /app/
-
-COPY gradle /app/gradle
-
-RUN ./gradlew dependencies --no-daemon || true
-
-COPY src /app/src
-
-RUN ./gradlew build --no-daemon
-
-FROM eclipse-temurin:21-jre-alpine
-
-WORKDIR /app
-
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
-
-CMD ["java", "-jar", "app.jar"]
-```
-
-And a Docker Compose file:
-
-```yaml
-services:
-  db:
-    image: mysql:8.0
-    container_name: db
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: "your_root_password"
-      MYSQL_DATABASE: "your_database"
-      MYSQL_USER: "your_username"
-      MYSQL_PASSWORD: "your_password"
-    volumes:
-      - db_data:/var/lib/mysql
-    
-  spring-auth-service:
-    build:
-      context: .
-    container_name: spring-auth-service
-    ports:
-      - "8081:8081"
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/your_database
-      SPRING_DATASOURCE_USERNAME: your_username
-      SPRING_DATASOURCE_PASSWORD: your_password
-      JWT_SECRET: your_jwt_secret
-      JWT_EXPIRATION: 3600000
-
-volumes:
-  db_data:
-```
-
 To build and run with Docker Compose:
 
 ```sh
 docker-compose up --build
-```
-
-## Creating an Admin User
-
-To create an admin user programmatically:
-
-```java
-@Component
-public class AdminInitializer implements CommandLineRunner {
-    
-    private final UserService userService;
-    
-    public AdminInitializer(UserService userService) {
-        this.userService = userService;
-    }
-    
-    @Override
-    public void run(String... args) {
-        if (!userService.existsByUsername("admin")) {
-            RegisterRequest admin = new RegisterRequest();
-            admin.setUsername("admin");
-            admin.setPassword("secure_admin_password");
-            admin.setFirstName("Admin");
-            admin.setLastName("User");
-            admin.setCountry("System");
-            admin.setRole("ADMIN");
-            
-            userService.registerUser(admin);
-            System.out.println("Admin user created successfully");
-        }
-    }
-}
 ```
 
 ## Views

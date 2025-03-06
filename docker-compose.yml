@@ -29,16 +29,22 @@ services:
       - mysql
     ports:
       - "8081:8081"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tarea2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: johann21
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src           # Monta el código fuente para desarrollo
+      - ./pom.xml:/app/pom.xml   # Monta el archivo pom.xml
+      - maven-repo:/root/.m2     # Caché de dependencias Maven
     networks:
       - spring-network
+    environment:
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      # Permitir la recarga en tiempo real
+      SPRING_DEVTOOLS_REMOTE_SECRET: "mysecret"
 
 volumes:
   mysql-data:
+  maven-repo:
 
 networks:
   spring-network:

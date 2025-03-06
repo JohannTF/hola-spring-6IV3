@@ -49,8 +49,11 @@ public class AuthService {
         // Guardar el usuario en la BD
         userRepository.save(user);
         
+        // Generar el token JWT
+        String token = jwtService.getToken(user);
+        
         return JwtResponse.builder()
-            .token(jwtService.getToken(user))
+            .token(token)
             .build();
     }
 

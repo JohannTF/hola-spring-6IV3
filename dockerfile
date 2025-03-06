@@ -2,7 +2,7 @@
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
 
 # Establece el directorio de trabajo
-WORKDIR /app
+WORKDIR /build
 
 # Copia el archivo pom.xml para descargar dependencias
 COPY pom.xml .
@@ -23,7 +23,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copia el JAR desde la etapa de compilación
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /build/target/*.jar /app/app.jar
 
 # Script para esperar a que MySQL esté disponible
 RUN apk add --no-cache mysql-client
