@@ -1,87 +1,400 @@
-# 🛠️ Tarea 1. Herramientas para el desarrollo de software
+# Spring Boot Authentication Project
 
-> [!IMPORTANT]
-> Las capturas de pantalla de las evidencias se encuentran en la carpeta `screenshots`
+In this project, you can find a complete Spring Boot application with JWT authentication and role-based authorization. This project provides a RESTful API for user management with various endpoints.
 
-## 🎯 Objetivo
+## Authentication API
 
-> Este repositorio contiene la primera tarea del curso de **Ingeniería de Software**, que consiste en la creación de un nuevo proyecto utilizando el framework **Spring Boot**. 
-> El proyecto muestra la configuración de una aplicación básica de **Spring Boot** con un controlador **REST** que devuelve el mensaje `"¡Hola, Spring!"`.
+The application provides several endpoints for user authentication and management:
 
-## ⚡ Quick Start
+**URL**: `/auth/register`
+**Method**: `POST`
+**Parameters**:
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | username      |  required | String   | The username for the new account  |
+> | password      |  required | String   | The password for the new account  |
+> | firstName      |  required | String   | The first name of the user  |
+> | lastName      |  required | String   | The last name of the user  |
+> | country      |  required | String   | The country of the user  |
+> | role      |  optional | String   | The role for the user (defaults to USER if not specified)  |
 
-<details>
-  <summary>👣 Pasos para ejecutar el proyecto</summary>
-Para ejecutar el proyecto:
+**Responses**:
 
-1. **Clona el repositorio** desde GitHub:
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `400`         | `application/json`    | `{"Error":"Error message"}` |
+> | `200`         | `application/json`    | `Success response (empty)`                      |
+
+**Example request**:
+```js
+{
+  "username": "john.doe",
+  "password": "securepassword123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "country": "USA",
+  "role": "USER"
+}
+```
+
+---
+**URL**: `/auth/login`
+**Method**: `POST`
+**Parameters**:
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | username      |  required | String   | The username for authentication  |
+> | password      |  required | String   | The password for authentication  |
+
+**Responses**:
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `401`         | `application/json`    | `null` (Authentication failed) |
+> | `200`         | `application/json`    | `{"token": "JWT_TOKEN"}`                      |
+
+**Example request**:
+```js
+{
+  "username": "john.doe",
+  "password": "securepassword123"
+}
+```
+
+**Example response**:
+```js
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+---
+**URL**: `/api/info`
+**Method**: `GET`
+**Parameters**:
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | Authorization      |  required | String   | The JWT token in header (Bearer token)  |
+
+**Responses**:
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `401`         | `application/json`    | Unauthorized (invalid token) |
+> | `200`         | `application/json`    | User information and token claims |
+
+**Example response**:
+```js
+{
+  "claims": {
+    "sub": "john.doe",
+    "iat": 1709705342,
+    "exp": 1709708942,
+    "roles": ["USER"]
+  },
+  "usuario": {
+    "id": 1,
+    "username": "john.doe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "country": "USA",
+    "roles": ["USER"]
+  }
+}
+```
+
+---
+**URL**: `/api/admin/all-info`
+**Method**: `GET`
+**Parameters**:
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | Authorization      |  required | String   | The JWT token in header (Bearer token with ADMIN role)  |
+
+**Responses**:
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `401`         | `application/json`    | Unauthorized (invalid token) |
+> | `403`         | `application/json`    | Forbidden (not an admin) |
+> | `200`         | `application/json`    | List of all users |
+
+**Example response**:
+```js
+[
+  {
+    "username": "john.doe",
+    "firstname": "John",
+    "lastname": "Doe",
+    "country": "USA",
+    "role": "USER"
+  },
+  {
+    "username": "admin.user",
+    "firstname": "Admin",
+    "lastname": "User",
+    "country": "Canada",
+    "role": "ADMIN"
+  }
+]
+```
+
+---
+**URL**: `/api/update`
+**Method**: `PUT`
+**Parameters**:
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | Authorization      |  required | String   | The JWT token in header (Bearer token)  |
+> | UserDto      |  required | Object   | User data to update  |
+
+**Responses**:
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `401`         | `application/json`    | Unauthorized (invalid token) |
+> | `200`         | `application/json`    | Updated user information and new token |
+
+**Example request**:
+```js
+{
+  "username": "john.doe",
+  "firstname": "Johnny",
+  "lastname": "Doe",
+  "country": "Canada"
+}
+```
+
+**Example response**:
+```js
+{
+  "user": {
+    "id": 1,
+    "username": "john.doe",
+    "firstName": "Johnny",
+    "lastName": "Doe",
+    "country": "Canada",
+    "roles": ["USER"]
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+---
+**URL**: `/api/admin/update/{username}`
+**Method**: `PUT`
+**Parameters**:
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | Authorization      |  required | String   | The JWT token in header (Bearer token with ADMIN role)  |
+> | username      |  required | String   | Username of the user to update (in URL)  |
+> | UserDto      |  required | Object   | User data to update  |
+
+**Responses**:
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `401`         | `application/json`    | Unauthorized (invalid token) |
+> | `403`         | `application/json`    | Forbidden (not an admin) |
+> | `200`         | `application/json`    | Updated user information |
+
+**Example request**:
+```js
+{
+  "firstname": "John",
+  "lastname": "Smith",
+  "country": "UK",
+  "role": "ADMIN"
+}
+```
+
+**Example response**:
+```js
+{
+  "user": {
+    "id": 1,
+    "username": "john.doe",
+    "firstName": "John",
+    "lastName": "Smith",
+    "country": "UK",
+    "roles": ["ADMIN"]
+  }
+}
+```
+
+---
+**URL**: `/api/admin/delete/{username}`
+**Method**: `DELETE`
+**Parameters**:
+> | name      |  type     | data type               | description                                                           |
+> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | Authorization      |  required | String   | The JWT token in header (Bearer token with ADMIN role)  |
+> | username      |  required | String   | Username of the user to delete (in URL)  |
+
+**Responses**:
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `401`         | `application/json`    | Unauthorized (invalid token) |
+> | `403`         | `application/json`    | Forbidden (not an admin) |
+> | `200`         | `application/json`    | Empty response (success) |
+
+## Project Structure
+
+The project follows a standard Spring Boot architecture:
+
+- `auth` package: Contains authentication controllers
+- `config` package: Contains security configuration
+- `controllers` package: REST and view controllers
+- `dtos` package: Data Transfer Objects
+- `model` package: Entity classes
+- `repository` package: Data access layer
+- `service` package: Business logic
+
+## Security Configuration
+
+The security configuration uses JWT (JSON Web Token) for authentication:
+
+- Tokens are valid for 1 hour (3,600,000 milliseconds)
+- Passwords are encrypted using BCrypt
+- API endpoints are secured by role-based authorization
+- Web views are accessible under the `/view` path
+
+## Installation
+
+To run the application, you need:
+
+1. Java 21 or higher
+2. MySQL database
+
+Configure your database connection in the `application.properties` file:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name?useSSL=false&serverTimezone=UTC
+spring.datasource.username=your_database_username
+spring.datasource.password=your_database_password
+```
+
+You can start the application using:
 
 ```sh
-git clone https://github.com/JohannTF/hola-spring-6IV3.git
+./gradlew bootRun
 ```
 
-2. Accede a la carpeta del proyecto:
-``` sh
-cd hola-spring-6IV3
+Or build and run the JAR file:
+
+```sh
+./gradlew build
+java -jar build/libs/your-application-name.jar
 ```
 
-3. Asegurarse de tener Java JDK y Maven instalados.
-``` sh
-java -version
-mvn -version
+## Docker Deployment
+
+For Docker deployment, you can use the following Dockerfile:
+
+```dockerfile
+FROM openjdk:21-jdk AS builder
+
+WORKDIR /app
+
+RUN microdnf install findutils
+
+COPY build.gradle settings.gradle gradlew /app/
+
+COPY gradle /app/gradle
+
+RUN ./gradlew dependencies --no-daemon || true
+
+COPY src /app/src
+
+RUN ./gradlew build --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
+
+CMD ["java", "-jar", "app.jar"]
 ```
 
-4. Ejecuta el siguiente comando para iniciar la aplicación:
-``` sh
-mvn spring-boot:run
+And a Docker Compose file:
+
+```yaml
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "your_root_password"
+      MYSQL_DATABASE: "your_database"
+      MYSQL_USER: "your_username"
+      MYSQL_PASSWORD: "your_password"
+    volumes:
+      - db_data:/var/lib/mysql
+    
+  spring-auth-service:
+    build:
+      context: .
+    container_name: spring-auth-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/your_database
+      SPRING_DATASOURCE_USERNAME: your_username
+      SPRING_DATASOURCE_PASSWORD: your_password
+      JWT_SECRET: your_jwt_secret
+      JWT_EXPIRATION: 3600000
+
+volumes:
+  db_data:
 ```
-5. Una vez que la aplicación inicie, acceder desde el navegador a la ruta:
-> http://localhost:8081/
 
-</details>
----
+To build and run with Docker Compose:
 
-## 📌 Índice de Instalaciones
+```sh
+docker-compose up --build
+```
 
-> 🍵 [Java Development Kit (JDK)](#-java-development-kit-jdk)  
-> 🪶 [Maven](#-maven)  
-> 🌱 [Spring Boot](#-spring-boot)  
-> 🖥️ [Git](#-git)  
-> 🐈‍⬛ [GitHub Desktop](#-github-desktop)  
-> 🛢️ [XAMPP](#-xampp)  
+## Creating an Admin User
 
-## 🍵 Java Development Kit (JDK)
-1. Descargar la versión 21 de JDK del sitio de [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html).
-2. Ejecutar el instalador y seguir las instrucciones que aparezcan en pantalla.
-3. Configurar la variable de entorno `JAVA_HOME` con la ruta de la ruta `C:\Program Files\Amazon Corretto\jdk21.0.6_7`.
-4. Verificar la instalación con el comando: `java -version` desde la terminal.
+To create an admin user programmatically:
 
-## 🪶 Maven 
-1. Descargar Maven desde la sección de 'Descargas' de su [sitio oficial](https://maven.apache.org/download.cgi) (el archivo `.tar.gz`).
-2. Descomprimir la carpeta en algún directorio.
-3. Configurar la variable de entorno `PATH` con la ruta del directorio `bin` de Maven del sistema.
-4. Verificar la instalación con el comando: `mvn -version` desde la terminal.
+```java
+@Component
+public class AdminInitializer implements CommandLineRunner {
+    
+    private final UserService userService;
+    
+    public AdminInitializer(UserService userService) {
+        this.userService = userService;
+    }
+    
+    @Override
+    public void run(String... args) {
+        if (!userService.existsByUsername("admin")) {
+            RegisterRequest admin = new RegisterRequest();
+            admin.setUsername("admin");
+            admin.setPassword("secure_admin_password");
+            admin.setFirstName("Admin");
+            admin.setLastName("User");
+            admin.setCountry("System");
+            admin.setRole("ADMIN");
+            
+            userService.registerUser(admin);
+            System.out.println("Admin user created successfully");
+        }
+    }
+}
+```
 
-## 🌱 Spring Boot
-Para instalar Spring Boot, basta con descargar las siguientes extensiones en VSCode:
-1. Spring Boot Extension Pack
-2. Spring Boot Tools
-3. Spring Boot Dashboard
-4. Spring Initializr Java Support
+## Views
 
-## 🖥️ Git
-1. Descargar el instalador de **Git** desde [su sitio oficial](https://git-scm.com/downloads).
-2. Ejecutar el instalador y seguir los pasos recomendados.
-3. Configurar tu usuario con `git config --global user.name "Tu Nombre"` y `git config --global user.email "tu@email.com"`.
-4. Verificar la instalación ejecutando `git --version` en la terminal.
+The application provides the following views:
 
-## 🐈‍⬛ GitHub Desktop
-1. Descargar **GitHub Desktop** desde [su sitio oficial](https://desktop.github.com/).
-2. Ejecutar el instalador y seguir las instrucciones.
-3. Iniciar sesión con tu cuenta de **GitHub**.
-
-## 🛢️ XAMPP
-1. Descargar **XAMPP** desde [su sitio oficial](https://www.apachefriends.org/es/index.html).
-2. Ejecutar el instalador y seguir los pasos recomendados.
-3. Iniciar los servicios desde el Panel de Control de **XAMPP**.
-4. Verificar el funcionamiento accediendo a `http://localhost` en tu navegador.
+- `/view/my-profile` - User profile page
+- `/view/admin/all-users` - Admin page to manage users
