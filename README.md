@@ -300,3 +300,16 @@ The application provides the following views:
 
 - `/view/my-profile` - User profile page
 - `/view/admin/all-users` - Admin page to manage users
+
+## Default Admin User
+
+Por defecto, se carga un usuario administrador con las siguientes credenciales:
+
+- **Username**: `sudo`
+- **Lastname**: `user`
+- **Firstname**: `super`
+- **Country**: `not defined`
+- **Password**: `password` (encriptada con BCrypt)
+- **Role**: `ROLE_ADMIN`
+
+Puedes utilizar estas credenciales para probar las funcionalidades de administrador.

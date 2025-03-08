@@ -49,19 +49,28 @@ public class UserService {
                         .build())
                 .collect(Collectors.toList());
     }
-
+    
     @Transactional
     public User updateUser(User user, UserDto updatedUserDto) {
-        user.setFirstname(updatedUserDto.getFirstname());
-        user.setLastname(updatedUserDto.getLastname());
-        user.setCountry(updatedUserDto.getCountry());
+        // Actualizar datos básicos
+        if (updatedUserDto.getFirstname() != null) {
+            user.setFirstname(updatedUserDto.getFirstname());
+        }
+        if (updatedUserDto.getLastname() != null) {
+            user.setLastname(updatedUserDto.getLastname());
+        }
+        if (updatedUserDto.getCountry() != null) {
+            user.setCountry(updatedUserDto.getCountry());
+        }
 
-        // Aquí busca el rol en la base de datos
-        Role role = roleRepository.findByName("ROLE_" + updatedUserDto.getRole().toUpperCase())
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-        user.setRole(role);
+        // Si hay un rol en la solicitud, actualizarlo
+        if (updatedUserDto.getRole() != null && !updatedUserDto.getRole().isEmpty()) {
+            Role role = roleRepository.findByName("ROLE_" + updatedUserDto.getRole().toUpperCase())
+                    .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+            user.setRole(role);
+        }
 
-        // Aquí codifica la contraseña si se proporciona
+        // Solo actualizar la contraseña si explícitamente se proporciona
         if (updatedUserDto.getPassword() != null && !updatedUserDto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(updatedUserDto.getPassword()));
         }

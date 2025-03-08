@@ -43,12 +43,20 @@ public class UserRestController {
         List<UserDto> users = userService.getAllUsersDto();
         return ResponseEntity.ok(users);
     }
-
+    
     @PutMapping("/update")
     public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody UserDto updatedUserDto) {
         String username = userService.extractUsernameFromToken(token);
         User user = userService.getUserByUsername(username);
-
+        
+        // Establecer el rol como "USER" si no se proporciona
+        if (updatedUserDto.getRole() == null) {
+            updatedUserDto.setRole("USER");
+        }
+        
+        // Configurar updatedUserDto para no actualizar la contraseña
+        updatedUserDto.setPassword(null);
+        
         User updated = userService.updateUser(user, updatedUserDto);
 
         // Generate a new token with updated roles

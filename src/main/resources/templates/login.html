@@ -178,7 +178,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data); // Verificar la respuesta del servidor
                 if (data.token) {
                     localStorage.setItem('token', data.token);
                     window.location.replace('view/my-profile'); // Usar replace en lugar de href

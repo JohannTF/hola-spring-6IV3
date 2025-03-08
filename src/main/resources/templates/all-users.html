@@ -47,9 +47,15 @@
         background-color: var(--white);
       }
 
+      /* Estilos corregidos */
       thead {
-        background-color: var(--secondary-color);
+        background-color: var(--secondary-color); /* #5c8984 */
         color: var(--white);
+      }
+
+      /* Opcional: Añadir bordes sutiles para mayor definición */
+      th {
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       th,
@@ -63,8 +69,11 @@
         text-transform: uppercase;
         font-size: 0.9em;
         letter-spacing: 0.5px;
-        font-weight: 500;
-        background-color: #f2f2f2;
+        font-weight: 600; /* Aumentado de 500 a 600 para mayor legibilidad */
+        background-color: var(
+          --secondary-color
+        ); /* Usar el mismo color que thead */
+        color: var(--white); /* Asegurar que el texto sea blanco */
       }
 
       tr:nth-child(even) {
@@ -372,7 +381,6 @@
       }
 
       function saveUser(button, originalUsername) {
-        console.log(originalUsername);
         const row = button.closest("tr");
         const cells = row.querySelectorAll("td:not(:last-child)");
         const token = localStorage.getItem("token");
@@ -401,7 +409,6 @@
             return response.json();
           })
           .then((data) => {
-            console.log(data);
             cells.forEach((cell, index) => {
               if (index === 4) {
                 // Role column

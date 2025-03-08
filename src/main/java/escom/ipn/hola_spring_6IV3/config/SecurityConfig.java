@@ -31,7 +31,11 @@ public class SecurityConfig {
         // Permitir acceso a todoas las rutas que comiencen con "/auth/**"
             .authorizeHttpRequests(authRequest -> 
                 authRequest
+                // Permitir acceso a recursos estáticos
+                .requestMatchers("/js/**", "/styles/**", "/css/**", "/images/**").permitAll()
+                // Permitir acceso a las vistas y endpoints de login y signup
                 .requestMatchers("/login", "/register", "/auth/login", "/auth/register", "/view/**").permitAll()
+                // Permitir acceso los endpoints para el admin si y solo si el usuario es ADMIN
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )

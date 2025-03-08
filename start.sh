@@ -1,11 +1,13 @@
 #!/bin/sh
-set -e  # Esto hará que el script se detenga si hay errores
+set -e
 
-echo "Waiting for MySQL to start..."
+echo "Waiting for MySQL to be available..."
 while ! nc -z mysql 3306; do
-    echo "MySQL not ready yet, waiting..."
-    sleep 2
+  echo "MySQL not available yet - waiting..."
+  sleep 2
 done
-echo "MySQL is up - starting application"
+echo "MySQL is up and running!"
 
-exec java -jar /app/app.jar  # Usa exec para evitar problemas con Docker
+echo "Starting Spring Boot application in development mode..."
+# Ejecuta la aplicación con spring-boot:run para habilitar devtools
+exec mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true"
