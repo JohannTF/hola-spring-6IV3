@@ -313,3 +313,22 @@ Por defecto, se carga un usuario administrador con las siguientes credenciales:
 - **Role**: `ROLE_ADMIN`
 
 Puedes utilizar estas credenciales para probar las funcionalidades de administrador.
+
+## Screenshots
+
+Here are some screenshots of the application (You can find more in `screenshots/Tarea3&Practica1/` route)
+
+### User Registration
+![User Registration](./screenshots/Tarea3&Practica1/sign_up.png)
+
+### All Users
+![All Users](./screenshots/Tarea3&Practica1/panel_users.png)
+
+### New Users Form
+![All Users](./screenshots/Tarea3&Practica1/add_new_users.png)
+
+### User Profile
+![User Profile](./screenshots/Tarea3&Practica1/personal_info.png)
+
+### Login
+![Login](./screenshots/Tarea3&Practica1/login.png)

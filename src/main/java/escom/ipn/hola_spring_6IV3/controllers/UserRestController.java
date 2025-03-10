@@ -49,11 +49,9 @@ public class UserRestController {
         String username = userService.extractUsernameFromToken(token);
         User user = userService.getUserByUsername(username);
         
-        // Establecer el rol como "USER" si no se proporciona
-        if (updatedUserDto.getRole() == null) {
-            updatedUserDto.setRole("USER");
-        }
-        
+        // Configurar updatedUserDto para no actualizar el rol
+        updatedUserDto.setRole(user.getRole().toString());
+
         // Configurar updatedUserDto para no actualizar la contraseña
         updatedUserDto.setPassword(null);
         
