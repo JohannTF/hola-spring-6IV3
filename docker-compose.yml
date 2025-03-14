@@ -22,7 +22,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     container_name: spring-app
     restart: always
     depends_on:
