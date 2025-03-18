@@ -274,20 +274,6 @@ spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name?useSSL=fals
 spring.datasource.username=your_database_username
 spring.datasource.password=your_database_password
 ```
-
-You can start the application using:
-
-```sh
-./gradlew bootRun
-```
-
-Or build and run the JAR file:
-
-```sh
-./gradlew build
-java -jar build/libs/your-application-name.jar
-```
-
 To build and run with Docker Compose:
 
 ```sh
