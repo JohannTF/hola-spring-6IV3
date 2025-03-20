@@ -314,7 +314,7 @@ Por defecto, se carga un usuario administrador con las siguientes credenciales:
 
 Puedes utilizar estas credenciales para probar las funcionalidades de administrador.
 
-## Screenshots
+<!-- ## Screenshots
 
 Here are some screenshots of the application (You can find more in `screenshots/Tarea3&Practica1/` route)
 
@@ -331,4 +331,4 @@ Here are some screenshots of the application (You can find more in `screenshots/
 ![User Profile](./screenshots/Tarea3&Practica1/personal_info.png)
 
 ### Login
-![Login](./screenshots/Tarea3&Practica1/login.png)
+![Login](./screenshots/Tarea3&Practica1/login.png) -->

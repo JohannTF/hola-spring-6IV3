@@ -50,7 +50,7 @@ public class UserRestController {
         User user = userService.getUserByUsername(username);
         
         // Configurar updatedUserDto para no actualizar el rol
-        updatedUserDto.setRole(user.getRole().toString());
+        updatedUserDto.setRole(user.getRole().getName().toString());
 
         // Configurar updatedUserDto para no actualizar la contraseña
         updatedUserDto.setPassword(null);
