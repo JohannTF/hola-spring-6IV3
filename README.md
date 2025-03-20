@@ -317,8 +317,4 @@ Here are some screenshots of the application (You can find more in `screenshots/
 ![User Profile](./screenshots/Tarea3&Practica1/personal_info.png)
 
 ### Login
-<<<<<<< HEAD
 ![Login](./screenshots/Tarea3&Practica1/login.png) -->
-=======
-![Login](./screenshots/Tarea3&Practica1/login.png)
->>>>>>> 22bf2e1b47fc352649e07ed1c4b9e98fcbc4b5a4
