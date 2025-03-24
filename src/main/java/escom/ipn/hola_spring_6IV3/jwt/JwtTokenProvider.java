@@ -14,7 +14,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
-// Generar y validar JWT
+/**
+ * Componente para generación y validación de tokens JWT.
+ * Encapsula toda la lógica relacionada con la creación y verificación de tokens.
+ */
 @Component
 public class JwtTokenProvider {
 
@@ -24,23 +27,31 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration}")
     private long jwtExpirationInMills;
 
-    // Generar un token sin claims adicionales
+    /**
+     * Genera un token JWT para un usuario sin claims adicionales
+     */
     public String generateToken(UserDetails user) {
         return getToken(new HashMap<>(), user);
     }
 
-    // Generar un token con claims adicionales
+    /**
+     * Genera un token JWT con claims adicionales
+     */
     public String generateToken(Map<String, Object> extraClaims, UserDetails user) {
         return getToken(extraClaims, user);
     }
 
-    // Método para obtener la clave secreta de forma segura
+    /**
+     * Obtiene la clave secreta para firmar el JWT
+     */
     private Key getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
-        // Permite crear una nueva instancia de nuestra secret key
     }
 
+    /**
+     * Construye un token JWT con los datos proporcionados
+     */
     @SuppressWarnings("deprecation")
     private String getToken(Map<String, Object> extraClaims, UserDetails user) {
         return Jwts.builder()
@@ -52,7 +63,9 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    // Método para extraer los claims del token
+    /**
+     * Extrae los claims del token JWT
+     */
     @SuppressWarnings("deprecation")
     private Claims extractClaims(String token) {
         return Jwts.parser()
@@ -62,17 +75,23 @@ public class JwtTokenProvider {
             .getBody();
     }
     
-    // Método para verificar si el token ha expirado
+    /**
+     * Verifica si el token ha expirado
+     */
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }
     
-    // Método para extraer el usuario del token
+    /**
+     * Extrae el nombre de usuario del token
+     */
     public String extractUsername(String token){
         return extractClaims(token).getSubject();
     }
     
-    // Método para extraer toda la información del token
+    /**
+     * Extrae toda la información del token
+     */
     public Map<String, Object> extractAllInfo(String token) {
         Claims claims = extractClaims(token);
         Map<String, Object> info = new HashMap<>();
@@ -83,7 +102,9 @@ public class JwtTokenProvider {
         return info;
     }
 
-    // Método para validar el token
+    /**
+     * Valida un token JWT para un usuario específico
+     */
     public boolean isTokenValid(String token, UserDetails user) {
         try {
             final String username = extractUsername(token);

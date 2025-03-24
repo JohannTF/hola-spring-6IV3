@@ -12,41 +12,58 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import escom.ipn.hola_spring_6IV3.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 
-// Índica que es una clase de configuración de Spring
+/**
+ * Configuración de seguridad para la aplicación.
+ * Define reglas de acceso, políticas de sesión y filtros de autenticación.
+ */
 @Configuration
-// Habilita la seguridad web en la aplicación
 @EnableWebSecurity
-// Genera un constructor con los campos finales requeridos
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthenticationProvider authProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Configura el filtro de seguridad HTTP
+     * 
+     * @param http Objeto HttpSecurity a configurar
+     * @return SecurityFilterChain configurada
+     * @throws Exception Si hay errores en la configuración
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-        // Deshabilitar la protección contra Cross-Site Request Forgery (CSRF) (la configuración inicial de SpringSecurity)
-            .csrf(csfr -> csfr.disable())
-        // Permitir acceso a todoas las rutas que comiencen con "/auth/**"
+            // Deshabilitar CSRF (Cross-Site Request Forgery definida por defecto by SpringSecurity) para APIs REST con autenticación sin estado
+            .csrf(csrf -> csrf.disable())
+            
+            // Configurar reglas de autorización para rutas
             .authorizeHttpRequests(authRequest -> 
                 authRequest
-                // Permitir acceso a recursos estáticos
-                .requestMatchers("/js/**", "/styles/**", "/css/**", "/images/**").permitAll()
-                // Permitir acceso a las vistas y endpoints de login y signup
-                .requestMatchers("/login", "/register", "/auth/login", "/auth/register", "/view/**").permitAll()
-                // Permitir acceso los endpoints para el admin si y solo si el usuario es ADMIN
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                    // Permitir acceso a recursos estáticos
+                    .requestMatchers("/js/**", "/styles/**", "/css/**", "/images/**").permitAll()
+                    
+                    // Permitir acceso a páginas y endpoints de autenticación
+                    .requestMatchers("/login", "/register", "/auth/**", "/view/**").permitAll()
+                    
+                    // Rutas administrativas solo para rol ADMIN
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    
+                    // Todas las demás rutas requieren autenticación
+                    .anyRequest().authenticated()
             )
-        // Configurar la politica de sesiones (STATELESS)
-            .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        // Configurar el proveedor de autenticación
+            
+            // Configurar política de sesión sin estado (stateless) para JWT
+            .sessionManagement(sessionManager -> 
+                sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            
+            // Configurar proveedor de autenticación
             .authenticationProvider(authProvider)
-        // Añadir el filtro de autenticación JWT antes del filtro de autenticación de nombre de usuario y contrasña
-            // -> Add: JwtTokenProvider -> JwtService -> JwtAuthenticationFilter and then:
+            
+            // Añadir filtro JWT antes del filtro estándar de autenticación
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        // Finalmente, construir el objeto
+            
+            // Construir la configuración
             .build();
     }
 }
