@@ -38,10 +38,10 @@ services:
     networks:
       - spring-network
     environment:
-      # Sólo necesitamos sobreescribir URL
       DB_URL: jdbc:mysql://mysql:3306/tarea2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    env_file: 
-      - .env
+      DB_USERNAME: root
+      DB_PASSWORD: johann21
+      JWT_SECRET: EsteEsUnSecretoMuySeguroParaFirmarElTokenCon256Bits!
 
 volumes:
   mysql-data:
