@@ -10,6 +10,36 @@
     --light-gray: #f2f2f2;
     --success-color: #2ecc71;
     --success-dark: #27ae60;
+    --card-bg: #ffffff;
+    --border-color: #e1e1e1;
+    --input-bg: #f2f2f2;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --table-stripe: rgba(92, 137, 132, 0.05);
+    --table-hover: rgba(92, 137, 132, 0.1);
+}
+
+[data-theme="dark"] {
+    --primary-color: #00ffe1;
+    --secondary-color: #dbffff;
+    --background-color: #1a2a2d;
+    --text-color: #ffffff; /* Cambiado a blanco puro para mayor contraste */
+    --accent-color: #6b8e8e;
+    --white: #2c3e50;
+    --error-color: #e74c3c;
+    --error-dark: #c0392b;
+    --light-gray: #2c3e50;
+    --success-color: #2ecc71;
+    --success-dark: #27ae60;
+    --card-bg: #2c3e50;
+    --border-color: #34495e;
+    --input-bg: #34495e;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --table-stripe: rgba(92, 137, 132, 0.1);
+    --table-hover: rgba(92, 137, 132, 0.2);
+    --label-color: #a5c9ca; /* Nuevo - color para etiquetas en modo oscuro */
+    --link-color: #6ab7ff; /* Nuevo - color para enlaces en modo oscuro */
+    --header-text: #ffffff; /* Nuevo - color para textos de encabezados */
+    --disabled-text: #b3b3b3; /* Nuevo - color para texto deshabilitado */
 }
 
 * {
@@ -23,6 +53,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -107,6 +138,40 @@ body {
     background-color: var(--error-color);
 }
 
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    background-color: var(--primary-color);
+}
+
+.theme-toggle i {
+    font-size: 1.5rem;
+    transition: transform 0.5s ease;
+}
+
+.theme-toggle:hover i {
+    transform: rotate(30deg);
+}
+
 /* Animaciones */
 @keyframes fadeIn {
     from {
@@ -151,5 +216,16 @@ body {
     .btn {
         padding: 10px 16px;
         font-size: 14px;
+    }
+    
+    .theme-toggle {
+        width: 40px;
+        height: 40px;
+        bottom: 10px;
+        left: 10px;
+    }
+    
+    .theme-toggle i {
+        font-size: 1.2rem;
     }
 }

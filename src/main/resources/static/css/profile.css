@@ -6,10 +6,11 @@ header {
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 header h1 {
@@ -29,12 +30,13 @@ header h1 {
 }
 
 .profile-card {
-    background-color: var(--white);
+    background-color: var(--card-bg);
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-color);
     padding: 30px;
     flex: 1;
     min-width: 300px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .profile-header {
@@ -52,6 +54,10 @@ header h1 {
     font-weight: 600;
 }
 
+[data-theme="dark"] .profile-header h2 {
+    color: var(--header-text); /* Asegura que el título sea visible en modo oscuro */
+}
+
 .form-group {
     margin-bottom: 20px;
 }
@@ -63,13 +69,19 @@ label {
     color: var(--primary-color);
 }
 
+[data-theme="dark"] label {
+    color: var(--label-color); /* Mejora la visibilidad de etiquetas en modo oscuro */
+}
+
 input[type="text"] {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 16px;
     transition: all 0.3s ease;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 input[type="text"]:focus {
@@ -80,8 +92,13 @@ input[type="text"]:focus {
 
 input[type="text"]:disabled {
     background-color: var(--light-gray);
-    color: #777;
+    color: var(--text-color);
+    opacity: 0.7;
     cursor: not-allowed;
+}
+
+[data-theme="dark"] input[type="text"]:disabled {
+    color: var(--disabled-text);
 }
 
 .button-group {
@@ -120,7 +137,7 @@ input[type="text"]:disabled {
 }
 
 .loading-spinner-container {
-    border: 4px solid var(--light-gray);
+    border: 4px solid var(--border-color);
     border-top: 4px solid var(--primary-color);
     border-radius: 50%;
     width: 30px;

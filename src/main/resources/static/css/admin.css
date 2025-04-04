@@ -3,10 +3,11 @@
 .admin-container {
     max-width: 1200px;
     margin: 0 auto;
-    background-color: var(--white);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 6px var(--shadow-color);
     border-radius: 8px;
     overflow: hidden;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .admin-header {
@@ -17,12 +18,18 @@
     background-color: var(--accent-color);
     font-weight: 300;
     letter-spacing: 1px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] .admin-header {
+    color: var(--header-text);
 }
 
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: var(--white);
+    background-color: var(--card-bg);
+    transition: background-color 0.3s ease;
 }
 
 .admin-table thead {
@@ -47,11 +54,11 @@
 }
 
 .admin-table tr:nth-child(even) {
-    background-color: rgba(92, 137, 132, 0.05);
+    background-color: var(--table-stripe);
 }
 
 .admin-table tr:hover {
-    background-color: rgba(92, 137, 132, 0.1);
+    background-color: var(--table-hover);
     transition: background-color 0.3s ease;
 }
 
@@ -118,13 +125,14 @@
 }
 
 .modal-content {
-    background-color: var(--white);
-    margin: 10% auto;
+    background-color: var(--card-bg);
+    margin: auto     auto;
     padding: 20px;
     border-radius: 8px;
     width: 80%;
     max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px var(--shadow-color);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .modal-header {
@@ -140,6 +148,10 @@
     color: var(--primary-color);
     font-size: 1.5em;
     margin: 0;
+}
+
+[data-theme="dark"] .modal-title {
+    color: var(--header-text);
 }
 
 .close-button {
@@ -196,9 +208,12 @@
 input, select {
     width: 100%;
     padding: 8px;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1em;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Responsive */

@@ -1,15 +1,16 @@
 /* Estilos específicos para páginas de autenticación (login y registro) */
 
 .auth-container {
-    background-color: var(--white);
+    background-color: var(--card-bg);
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px var(--shadow-color);
     width: 100%;
     max-width: 500px;
     padding: 40px;
     position: relative;
     overflow: hidden;
     margin: 50px auto;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .auth-container::before {
@@ -29,6 +30,10 @@
     font-weight: 600;
 }
 
+[data-theme="dark"] .auth-title {
+    color: var(--header-text);
+}
+
 .auth-form-group {
     margin-bottom: 25px;
     position: relative;
@@ -42,14 +47,19 @@
     font-size: 14px;
 }
 
+[data-theme="dark"] .auth-label {
+    color: var(--label-color);
+}
+
 .auth-input {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #e1e1e1;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 16px;
     transition: all 0.3s;
-    background-color: var(--light-gray);
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 .auth-input:focus {
@@ -88,6 +98,10 @@
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s;
+}
+
+[data-theme="dark"] .auth-link a {
+    color: var(--link-color);
 }
 
 .auth-link a:hover {

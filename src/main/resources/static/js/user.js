@@ -211,7 +211,7 @@ function setupProfilePage() {
     const adminBtn = document.getElementById('admin-page');
     if (adminBtn) {
         adminBtn.addEventListener('click', () => {
-            window.location.href = '/view/admin/all-users';
+            window.location.href = '/admin/all-users';
         });
     }
 }

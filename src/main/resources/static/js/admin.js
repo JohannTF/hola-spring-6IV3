@@ -309,7 +309,7 @@ function setupAdminPage() {
         .catch(error => {
             console.error('Error:', error);
             showToast('Error al cargar los usuarios', 'error');
-            setTimeout(() => window.location.href = '/view/my-profile', 2000);
+            setTimeout(() => window.location.href = '/my-profile', 2000);
         });
         
     // Cerrar modal al hacer clic fuera del contenido

@@ -44,7 +44,7 @@ public class SecurityConfig {
                     .requestMatchers("/js/**", "/styles/**", "/css/**", "/images/**").permitAll()
                     
                     // Permitir acceso a páginas y endpoints de autenticación
-                    .requestMatchers("/login", "/register", "/auth/**", "/view/**").permitAll()
+                    .requestMatchers("/login", "/register", "/auth/**", "/**").permitAll()
                     
                     // Rutas administrativas solo para rol ADMIN
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -1,32 +1,45 @@
-# Spring Boot Authentication Project
+# 📚 Plataforma de Literaria con Spring Boot <!-- omit from toc -->
 
-In this project, you can find a complete Spring Boot application with JWT authentication and role-based authorization. This project provides a RESTful API for user management with various endpoints.
+El nombre para esta pequeña aplicación para ingenieria de software es **OpenBook**. Esta construida con Spring Boot que combina autenticación con JWT, consumo de la api proporcionada por OpenLibrary.
+La plataforma permite a los usuarios descubrir y explorar algunos libros organizados por categorías, además de contar con un sistema de gestión de usuarios.
 
-## Authentication API
+## 📋 Índice de Contenidos <!-- omit from toc -->
 
-The application provides several endpoints for user authentication and management:
+- [✨ Características Implementadas (Hasta el momento)](#-características-implementadas-hasta-el-momento)
+- [🔑 API REST](#-api-rest)
+  - [Endpoints de Autenticación](#endpoints-de-autenticación)
+  - [Endpoints Usuarios](#endpoints-usuarios)
+- [🖥️ Vistas de la Aplicación](#️-vistas-de-la-aplicación)
+- [📖 Características de la Consulta de Libros](#-características-de-la-consulta-de-libros)
+- [🏗️ Estructura del Proyecto](#️-estructura-del-proyecto)
+- [⚙️ Instalación](#️-instalación)
+- [Usuario Admin por Defecto](#usuario-admin-por-defecto)
+- [APIs Externas](#apis-externas)
 
-**URL**: `/auth/register`
-**Method**: `POST`
-**Parameters**:
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | username      |  required | String   | The username for the new account  |
-> | password      |  required | String   | The password for the new account  |
-> | firstName      |  required | String   | The first name of the user  |
-> | lastName      |  required | String   | The last name of the user  |
-> | country      |  required | String   | The country of the user  |
-> | role      |  optional | String   | The role for the user (defaults to USER if not specified)  |
+## ✨ Características Implementadas (Hasta el momento)
 
-**Responses**:
+- Autenticación y autorización basada en JWT con roles de usuario
+- Exploración de libros por categorías
+- Visualización detallada de información de libros
+- Interfaz responsiva con soporte para tema claro/oscuro
+- Panel administrativo para gestión de usuarios
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `400`         | `application/json`    | `{"Error":"Error message"}` |
-> | `200`         | `application/json`    | `Success response (empty)`                      |
+## 🔑 API REST
 
-**Example request**:
-```js
+La aplicación proporciona varios endpoints para la autenticación, gestión de usuarios y acceso a la información:
+
+### Endpoints de Autenticación
+
+#### `/auth/register` <!-- omit from toc -->
+**Método**: `POST`  
+**Descripción**: Registra un nuevo usuario en el sistema.
+
+| Parámetros | Respuestas |
+|------------|------------|
+| **username**: String (requerido)<br>**password**: String (requerido)<br>**firstName**: String (requerido)<br>**lastName**: String (requerido)<br>**country**: String (requerido)<br>**role**: String (opcional, por defecto "USER") | **200**: Registro exitoso (vacío)<br>**400**: `{"Error":"Mensaje de error"}` |
+
+**Ejemplo de solicitud de registro**:
+```json
 {
   "username": "john.doe",
   "password": "securepassword123",
@@ -37,60 +50,78 @@ The application provides several endpoints for user authentication and managemen
 }
 ```
 
----
-**URL**: `/auth/login`
-**Method**: `POST`
-**Parameters**:
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | username      |  required | String   | The username for authentication  |
-> | password      |  required | String   | The password for authentication  |
+#### `/auth/login` <!-- omit from toc -->
+**Método**: `POST`  
+**Descripción**: Inicia sesión y genera un token JWT.
 
-**Responses**:
+| Parámetros | Respuestas |
+|------------|------------|
+| **username**: String (requerido)<br>**password**: String (requerido) | **200**: `{"token": "JWT_TOKEN"}`<br>**401**: `null` (Autenticación fallida) |
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `401`         | `application/json`    | `null` (Authentication failed) |
-> | `200`         | `application/json`    | `{"token": "JWT_TOKEN"}`                      |
-
-**Example request**:
-```js
+**Ejemplo de solicitud de login**:
+```json
 {
   "username": "john.doe",
   "password": "securepassword123"
 }
 ```
 
-**Example response**:
-```js
+**Ejemplo de respuesta de login exitoso**:
+```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
 
----
-**URL**: `/api/info`
-**Method**: `GET`
-**Parameters**:
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | Authorization      |  required | String   | The JWT token in header (Bearer token)  |
+### Endpoints Usuarios
 
-**Responses**:
+#### `/api/info` <!-- omit from toc -->
+**Método**: `GET`  
+**Descripción**: Obtiene información del usuario autenticado.
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `401`         | `application/json`    | Unauthorized (invalid token) |
-> | `200`         | `application/json`    | User information and token claims |
+| Parámetros | Respuestas |
+|------------|------------|
+| **Authorization**: Bearer token (header) | **200**: Información de usuario y claims del token<br>**401**: No autorizado (token inválido) |
 
-**Example response**:
-```js
+#### `/api/update` <!-- omit from toc -->
+**Método**: `PUT`  
+**Descripción**: Actualiza información del usuario actual.
+
+| Parámetros | Respuestas |
+|------------|------------|
+| **Authorization**: Bearer token (header)<br>**Body**: Datos a actualizar | **200**: Usuario actualizado y nuevo token<br>**401**: No autorizado |
+
+#### `/api/admin/all-info` <!-- omit from toc -->
+**Método**: `GET`  
+**Descripción**: Obtiene información de todos los usuarios.
+
+| Parámetros | Respuestas |
+|------------|------------|
+| **Authorization**: Bearer token con rol ADMIN (header) | **200**: Lista de todos los usuarios<br>**401**: No autorizado<br>**403**: Prohibido (no es admin) |
+
+#### `/api/admin/update/{username}` <!-- omit from toc -->
+**Método**: `PUT`  
+**Descripción**: Actualiza información de cualquier usuario.
+
+| Parámetros | Respuestas |
+|------------|------------|
+| **Authorization**: Bearer token con rol ADMIN (header)<br>**username**: Nombre de usuario a actualizar (en URL)<br>**Body**: Datos a actualizar | **200**: Usuario actualizado<br>**401**: No autorizado<br>**403**: Prohibido |
+
+#### `/api/admin/delete/{username}` <!-- omit from toc -->
+**Método**: `DELETE`  
+**Descripción**: Elimina un usuario del sistema.
+
+| Parámetros | Respuestas |
+|------------|------------|
+| **Authorization**: Bearer token con rol ADMIN (header)<br>**username**: Nombre de usuario a eliminar (en URL) | **200**: Respuesta vacía (éxito)<br>**401**: No autorizado<br>**403**: Prohibido |
+
+**Ejemplo de respuesta de `/api/info`**:
+```json
 {
   "claims": {
     "sub": "john.doe",
     "iat": 1709705342,
     "exp": 1709708942,
-    "roles": ["USER"]
   },
   "usuario": {
     "id": 1,
@@ -103,191 +134,67 @@ The application provides several endpoints for user authentication and managemen
 }
 ```
 
----
-**URL**: `/api/admin/all-info`
-**Method**: `GET`
-**Parameters**:
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | Authorization      |  required | String   | The JWT token in header (Bearer token with ADMIN role)  |
+## 🖥️ Vistas de la Aplicación
 
-**Responses**:
+La aplicación proporciona las siguientes vistas principales (requiere inicio de sesión para acceder a ellas excepto register y login):
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `401`         | `application/json`    | Unauthorized (invalid token) |
-> | `403`         | `application/json`    | Forbidden (not an admin) |
-> | `200`         | `application/json`    | List of all users |
+| Ruta | Descripción |
+|------|-------------|
+| `/inicio` | Página principal con exploración de libros por categorías |
+| `/libro-detalle` | Detalles completos de un libro específico |
+| `/my-profile` | Perfil del usuario donde puede ver y editar su información |
+| `/admin/all-users` | Panel administrativo para gestionar usuarios (solo administradores) |
+| `/login` | Página de inicio de sesión |
+| `/register` | Página de registro de nuevos usuarios |
 
-**Example response**:
-```js
-[
-  {
-    "username": "john.doe",
-    "firstname": "John",
-    "lastname": "Doe",
-    "country": "USA",
-    "role": "USER"
-  },
-  {
-    "username": "admin.user",
-    "firstname": "Admin",
-    "lastname": "User",
-    "country": "Canada",
-    "role": "ADMIN"
-  }
-]
-```
+## 📖 Características de la Consulta de Libros
 
----
-**URL**: `/api/update`
-**Method**: `PUT`
-**Parameters**:
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | Authorization      |  required | String   | The JWT token in header (Bearer token)  |
-> | UserDto      |  required | Object   | User data to update  |
+- **Categorías Predefinidas**: Ficción, Fantasía, Ciencia Ficción, Misterio y Biografías
+- **Vista Detallada**: Información completa de libros, incluyendo:
+  - Portada
+  - Título y autor(es)
+  - Fecha de publicación y editorial
+  - ISBN y número de páginas
+  - Descripción del contenido
+  - Categorías asociadas
+  - Enlace al libro desde Open Library
 
-**Responses**:
+## 🏗️ Estructura del Proyecto
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `401`         | `application/json`    | Unauthorized (invalid token) |
-> | `200`         | `application/json`    | Updated user information and new token |
+El proyecto sigue una arquitectura estándar de Spring Boot:
 
-**Example request**:
-```js
-{
-  "username": "john.doe",
-  "firstname": "Johnny",
-  "lastname": "Doe",
-  "country": "Canada"
-}
-```
+- `auth`: Controladores de autenticación
+- `config`: Configuración de seguridad
+- `controllers`: Controladores REST y de vistas
+- `dtos`: Objetos de Transferencia de Datos
+- `model`: Clases de entidad
+- `repository`: Capa de acceso a datos
+- `service`: Lógica de negocio
+- `resources/templates`: Plantillas HTML para las vistas
+- `resources/static`: Recursos estáticos (CSS, JavaScript, imágenes)
 
-**Example response**:
-```js
-{
-  "user": {
-    "id": 1,
-    "username": "john.doe",
-    "firstName": "Johnny",
-    "lastName": "Doe",
-    "country": "Canada",
-    "roles": ["USER"]
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
+## ⚙️ Instalación
 
----
-**URL**: `/api/admin/update/{username}`
-**Method**: `PUT`
-**Parameters**:
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | Authorization      |  required | String   | The JWT token in header (Bearer token with ADMIN role)  |
-> | username      |  required | String   | Username of the user to update (in URL)  |
-> | UserDto      |  required | Object   | User data to update  |
+Para ejecutar la aplicación, necesitas:
 
-**Responses**:
+1. Java 21 o superior
+2. Base de datos MySQL
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `401`         | `application/json`    | Unauthorized (invalid token) |
-> | `403`         | `application/json`    | Forbidden (not an admin) |
-> | `200`         | `application/json`    | Updated user information |
-
-**Example request**:
-```js
-{
-  "firstname": "John",
-  "lastname": "Smith",
-  "country": "UK",
-  "role": "ADMIN"
-}
-```
-
-**Example response**:
-```js
-{
-  "user": {
-    "id": 1,
-    "username": "john.doe",
-    "firstName": "John",
-    "lastName": "Smith",
-    "country": "UK",
-    "roles": ["ADMIN"]
-  }
-}
-```
-
----
-**URL**: `/api/admin/delete/{username}`
-**Method**: `DELETE`
-**Parameters**:
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | Authorization      |  required | String   | The JWT token in header (Bearer token with ADMIN role)  |
-> | username      |  required | String   | Username of the user to delete (in URL)  |
-
-**Responses**:
-
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `401`         | `application/json`    | Unauthorized (invalid token) |
-> | `403`         | `application/json`    | Forbidden (not an admin) |
-> | `200`         | `application/json`    | Empty response (success) |
-
-## Project Structure
-
-The project follows a standard Spring Boot architecture:
-
-- `auth` package: Contains authentication controllers
-- `config` package: Contains security configuration
-- `controllers` package: REST and view controllers
-- `dtos` package: Data Transfer Objects
-- `model` package: Entity classes
-- `repository` package: Data access layer
-- `service` package: Business logic
-
-## Security Configuration
-
-The security configuration uses JWT (JSON Web Token) for authentication:
-
-- Tokens are valid for 1 hour (3,600,000 milliseconds)
-- Passwords are encrypted using BCrypt
-- API endpoints are secured by role-based authorization
-- Web views are accessible under the `/view` path
-
-## Installation
-
-To run the application, you need:
-
-1. Java 21 or higher
-2. MySQL database
-
-Configure your database connection in a `.env` file:
+Configura tu conexión a la base de datos en un archivo `.env`:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name?useSSL=false&serverTimezone=UTC
 spring.datasource.username=your_database_username
 spring.datasource.password=your_database_password
 ```
-To build and run with Docker Compose:
+
+Para construir y ejecutar con Docker Compose:
 
 ```sh
 docker-compose up --build
 ```
 
-## Views
-
-The application provides the following views:
-
-- `/view/my-profile` - User profile page
-- `/view/admin/all-users` - Admin page to manage users
-
-## Default Admin User
+## Usuario Admin por Defecto
 
 Por defecto, se carga un usuario administrador con las siguientes credenciales:
 
@@ -300,21 +207,11 @@ Por defecto, se carga un usuario administrador con las siguientes credenciales:
 
 Puedes utilizar estas credenciales para probar las funcionalidades de administrador.
 
-<!-- ## Screenshots
+## APIs Externas
 
-Here are some screenshots of the application (You can find more in `screenshots/Tarea3&Practica1/` route)
+La aplicación utiliza la API pública de OpenLibrary para obtener información sobre libros:
 
-### User Registration
-![User Registration](./screenshots/Tarea3&Practica1/sign_up.png)
-
-### All Users
-![All Users](./screenshots/Tarea3&Practica1/panel_users.png)
-
-### New Users Form
-![All Users](./screenshots/Tarea3&Practica1/add_new_users.png)
-
-### User Profile
-![User Profile](./screenshots/Tarea3&Practica1/personal_info.png)
-
-### Login
-![Login](./screenshots/Tarea3&Practica1/login.png) -->
+- Detalles de obras: `https://openlibrary.org/works/`
+- Portadas de libros: `https://covers.openlibrary.org/b/id/`
+- Información de autores: `https://openlibrary.org/authors/`
+- Categorías: `https://openlibrary.org/subjects/`

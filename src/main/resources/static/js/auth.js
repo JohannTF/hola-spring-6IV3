@@ -58,7 +58,8 @@ function setupLoginForm() {
             
             login(username, password)
                 .then(() => {
-                    window.location.replace('/view/my-profile');
+                    // Redirigir a la página de inicio en lugar del perfil
+                    window.location.replace('/inicio');
                 })
                 .catch(error => {
                     console.error('Error:', error);
