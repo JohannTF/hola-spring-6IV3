@@ -12,7 +12,7 @@ const OPENLIBRARY_API = {
 };
 
 // Imagen de portada por defecto
-const DEFAULT_COVER = '/img/default-cover.jpg';
+const DEFAULT_COVER = '/images/default-cover.jpg';
 
 /**
  * Configura la página principal
@@ -88,7 +88,7 @@ function loadBooksByCategories() {
  */
 function fetchBooksByCategory(category) {
     // Usar https y añadir parámetros adicionales para mejorar la respuesta
-    return fetch(`https://openlibrary.org/subjects/${category}.json?limit=10`)
+    return fetch(`https://openlibrary.org/subjects/${category}.json?limit=25`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -96,7 +96,6 @@ function fetchBooksByCategory(category) {
             return response.json();
         })
         .then(data => {
-            console.log(`Datos recibidos para categoría ${category}:`, data); // Debug log
             if (data && data.works && data.works.length > 0) {
                 return data.works.map(formatBookData);
             }
@@ -133,26 +132,25 @@ function formatBookData(book) {
  * @param {HTMLElement} container - Contenedor donde renderizar
  */
 function renderBooks(books, container) {
-    
     if (!books || books.length === 0) {
         container.innerHTML = '<p class="no-results">No se encontraron libros en esta categoría.</p>';
         return;
     }
-    
+
     // Crear el contenedor del carrusel
     const swiperContainer = document.createElement('div');
     swiperContainer.className = 'swiper-container book-carousel';
-    
+
     // Crear el wrapper para las slides
     const swiperWrapper = document.createElement('div');
     swiperWrapper.className = 'swiper-wrapper';
     swiperContainer.appendChild(swiperWrapper);
-    
+
     // Renderizar cada libro como un slide
     books.forEach(book => {
         const slide = document.createElement('div');
         slide.className = 'swiper-slide';
-        
+
         const bookElement = document.createElement('div');
         bookElement.className = 'book-card';
         bookElement.innerHTML = `
@@ -165,56 +163,58 @@ function renderBooks(books, container) {
                 <p class="book-year">${book.publishYear}</p>
             </div>
         `;
-        
+
         // Añadir evento click para ver detalles
         bookElement.addEventListener('click', () => {
             window.location.href = `/libro-detalle?id=${book.id}`;
         });
-        
+
         slide.appendChild(bookElement);
         swiperWrapper.appendChild(slide);
     });
-    
-    // Añadir navegación
+
+    // Limpiar el contenedor y añadir el carrusel
+    container.innerHTML = ''; // Asegurar que el contenedor esté vacío
+    container.appendChild(swiperContainer);
+
+    // Añadir botones de navegación al carrusel
     const prevButton = document.createElement('div');
     prevButton.className = 'swiper-button-prev';
     swiperContainer.appendChild(prevButton);
-    
+
     const nextButton = document.createElement('div');
     nextButton.className = 'swiper-button-next';
     swiperContainer.appendChild(nextButton);
-    
-    // Limpiar el contenedor y añadir el carrusel
-    container.innerHTML = '';
-    container.appendChild(swiperContainer);
-    
+
     // Inicializar Swiper
-    new Swiper(swiperContainer, {
-        slidesPerView: 'auto',
-        spaceBetween: 20,
-        navigation: {
-            nextEl: nextButton,
-            prevEl: prevButton,
-        },
-        breakpoints: {
-            320: {
-                slidesPerView: 2,
-                spaceBetween: 10
+    setTimeout(() => {
+        new Swiper(swiperContainer, {
+            slidesPerView: 'auto',
+            spaceBetween: 20,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
             },
-            480: {
-                slidesPerView: 3,
-                spaceBetween: 15
-            },
-            768: {
-                slidesPerView: 4,
-                spaceBetween: 15
-            },
-            992: {
-                slidesPerView: 5,
-                spaceBetween: 20
+            breakpoints: {
+                320: {
+                    slidesPerView: 2,
+                    spaceBetween: 10
+                },
+                480: {
+                    slidesPerView: 3,
+                    spaceBetween: 15
+                },
+                768: {
+                    slidesPerView: 4,
+                    spaceBetween: 15
+                },
+                992: {
+                    slidesPerView: 5,
+                    spaceBetween: 20
+                }
             }
-        }
-    });
+        });
+    }, 0); // Asegurar que Swiper se inicialice después de renderizar el DOM
 }
 
 /**
@@ -255,12 +255,12 @@ function searchBooks(query) {
     const booksContainer = searchResultsContainer.querySelector('.books-container');
     const categoriesContainer = document.getElementById('categories-container');
     const loadingContainer = document.getElementById('loading-container');
-    
+
     // Mostrar carga
     toggleElement(loadingContainer, true, 'flex');
     toggleElement(categoriesContainer, false);
     toggleElement(searchResultsContainer, false);
-    
+
     // Realizar búsqueda
     fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=20`)
         .then(response => {
@@ -270,22 +270,21 @@ function searchBooks(query) {
             return response.json();
         })
         .then(data => {
-            console.log('Datos de búsqueda recibidos:', data); // Debug log
             toggleElement(loadingContainer, false);
             toggleElement(searchResultsContainer, true, 'block');
-            
+
             if (data && data.docs && data.docs.length > 0) {
                 const books = data.docs.map(book => ({
                     id: book.key ? book.key.replace('/works/', '') : null,
                     title: book.title || 'Título desconocido',
                     authors: book.author_name ? book.author_name.join(', ') : 'Autor desconocido',
                     coverId: book.cover_i || null,
-                    coverUrl: book.cover_i ? 
-                        `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : 
-                        DEFAULT_COVER,
+                    coverUrl: book.cover_i
+                        ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
+                        : DEFAULT_COVER,
                     publishYear: book.first_publish_year || 'Año desconocido'
                 }));
-                
+
                 renderBooks(books, booksContainer);
             } else {
                 booksContainer.innerHTML = `
@@ -300,7 +299,7 @@ function searchBooks(query) {
             console.error('Error en búsqueda:', error);
             toggleElement(loadingContainer, false);
             toggleElement(searchResultsContainer, true, 'block');
-            
+
             booksContainer.innerHTML = `
                 <div class="error-message">
                     <i class="fas fa-exclamation-circle"></i>
@@ -314,7 +313,6 @@ function searchBooks(query) {
  * Carga los detalles de un libro específico
  */
 function loadBookDetails() {
-    console.log("Iniciando carga de detalles del libro");
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = urlParams.get('id');
     
@@ -343,7 +341,6 @@ function loadBookDetails() {
     bookDetailsContainer.style.display = 'none';
     loadingContainer.style.display = 'flex';
     
-    console.log("Solicitando datos del libro con ID:", bookId);
     
     // Obtener detalles del libro
     fetch(`https://openlibrary.org/works/${bookId}.json`)
@@ -354,7 +351,6 @@ function loadBookDetails() {
             return response.json();
         })
         .then(data => {
-            console.log('Datos de libro recibidos:', data);
             
             // Ocultar carga y mostrar detalles
             loadingContainer.style.display = 'none';
@@ -373,10 +369,10 @@ function loadBookDetails() {
                     coverElement.src = `https://covers.openlibrary.org/b/id/${data.covers[0]}-L.jpg`;
                     coverElement.onerror = () => { 
                         console.log("Error al cargar la imagen, usando imagen por defecto");
-                        coverElement.src = '../static/img/default-cover.jpg'; 
+                        coverElement.src = '/images/default-cover.jpg';
                     };
                 } else {
-                    coverElement.src = '../static/img/default-cover.jpg';
+                    coverElement.src = '/images/default-cover.jpg';
                 }
             }
             
