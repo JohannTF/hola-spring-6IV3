@@ -1,4 +1,4 @@
-package escom.ipn.hola_spring_6IV3.model;
+package escom.ipn.hola_spring_6IV3.domain.entity;
 
 import escom.ipn.hola_spring_6IV3.exception.RoleNotFoundException;
 

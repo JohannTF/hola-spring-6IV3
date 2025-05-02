@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import escom.ipn.hola_spring_6IV3.dtos.UserDto;
+import escom.ipn.hola_spring_6IV3.domain.dto.UserDTO;
+import escom.ipn.hola_spring_6IV3.domain.entity.User;
 import escom.ipn.hola_spring_6IV3.exception.UserNotFoundException;
-import escom.ipn.hola_spring_6IV3.model.User;
 import escom.ipn.hola_spring_6IV3.service.JwtService;
 import escom.ipn.hola_spring_6IV3.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +60,7 @@ public class UserRestController {
     @GetMapping("/admin/all-info")
     public ResponseEntity<?> getAllUsersInfo() {
         try {
-            List<UserDto> users = userService.getAllUsersDto();
+            List<UserDTO> users = userService.getAllUsersDto();
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
@@ -71,7 +71,7 @@ public class UserRestController {
      * Actualiza información del usuario autenticado
      */
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody UserDto updatedUserDto) {
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody UserDTO updatedUserDto) {
         try {
             String username = userService.extractUsernameFromToken(token);
             User user = userService.getUserByUsername(username);
@@ -111,7 +111,7 @@ public class UserRestController {
      * Actualiza información de un usuario por su nombre de usuario (solo para administradores)
      */
     @PutMapping("/admin/update/{username}")
-    public ResponseEntity<?> updateUserByAdmin(@PathVariable String username, @RequestBody UserDto updatedUserDto) {
+    public ResponseEntity<?> updateUserByAdmin(@PathVariable String username, @RequestBody UserDTO updatedUserDto) {
         try {
             User user = userService.getUserByUsername(username);
             User updated = userService.updateUser(user, updatedUserDto);

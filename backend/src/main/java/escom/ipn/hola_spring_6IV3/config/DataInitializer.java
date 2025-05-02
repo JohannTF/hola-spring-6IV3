@@ -1,7 +1,7 @@
 package escom.ipn.hola_spring_6IV3.config;
 
-import escom.ipn.hola_spring_6IV3.model.Role;
-import escom.ipn.hola_spring_6IV3.model.User;
+import escom.ipn.hola_spring_6IV3.domain.entity.Role;
+import escom.ipn.hola_spring_6IV3.domain.entity.User;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

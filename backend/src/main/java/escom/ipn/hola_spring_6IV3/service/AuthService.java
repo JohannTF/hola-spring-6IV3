@@ -6,14 +6,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import escom.ipn.hola_spring_6IV3.dtos.JwtResponse;
-import escom.ipn.hola_spring_6IV3.dtos.LoginRequest;
-import escom.ipn.hola_spring_6IV3.dtos.RegisterRequest;
+import escom.ipn.hola_spring_6IV3.domain.entity.Role;
+import escom.ipn.hola_spring_6IV3.domain.entity.User;
+import escom.ipn.hola_spring_6IV3.domain.request.auth.LoginRequest;
+import escom.ipn.hola_spring_6IV3.domain.request.auth.RegisterRequest;
+import escom.ipn.hola_spring_6IV3.domain.response.JwtResponse;
 import escom.ipn.hola_spring_6IV3.exception.UserAlreadyExistsException;
 import escom.ipn.hola_spring_6IV3.exception.RoleNotFoundException;
 import escom.ipn.hola_spring_6IV3.exception.UserNotFoundException;
-import escom.ipn.hola_spring_6IV3.model.Role;
-import escom.ipn.hola_spring_6IV3.model.User;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;

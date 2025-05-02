@@ -1,4 +1,4 @@
-package escom.ipn.hola_spring_6IV3.dtos;
+package escom.ipn.hola_spring_6IV3.domain.request.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JwtResponse {
-    private String token;
+public class LoginRequest {
+    
+    String username;
+    String password;
+    
 }

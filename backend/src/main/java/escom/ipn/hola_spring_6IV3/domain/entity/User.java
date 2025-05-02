@@ -1,4 +1,4 @@
-package escom.ipn.hola_spring_6IV3.model;
+package escom.ipn.hola_spring_6IV3.domain.entity;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,13 +21,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Genera automáticamente los métodos getter, setter, toString, equals y hashCode
 @Data
-// Proporciona un patrón de diseño Builder para la clase
 @Builder
-// Genera un constructor sin argumentos
 @NoArgsConstructor
-// Genera un constructor con un argumento para cada campo en la clase
 @AllArgsConstructor
 @Entity
 @Table(name = "user", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})

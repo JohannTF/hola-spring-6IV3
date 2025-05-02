@@ -8,11 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import escom.ipn.hola_spring_6IV3.dtos.UserDto;
+import escom.ipn.hola_spring_6IV3.domain.dto.UserDTO;
+import escom.ipn.hola_spring_6IV3.domain.entity.Role;
+import escom.ipn.hola_spring_6IV3.domain.entity.User;
 import escom.ipn.hola_spring_6IV3.exception.RoleNotFoundException;
 import escom.ipn.hola_spring_6IV3.exception.UserNotFoundException;
-import escom.ipn.hola_spring_6IV3.model.Role;
-import escom.ipn.hola_spring_6IV3.model.User;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -54,7 +54,7 @@ public class UserService {
     /**
      * Obtiene todos los usuarios como DTOs (transferencia de datos)
      */
-    public List<UserDto> getAllUsersDto() {
+    public List<UserDTO> getAllUsersDto() {
         return userRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -63,8 +63,8 @@ public class UserService {
     /**
      * Convierte una entidad User a UserDto
      */
-    private UserDto convertToDto(User user) {
-        return UserDto.builder()
+    private UserDTO convertToDto(User user) {
+        return UserDTO.builder()
                 .username(user.getUsername())
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
@@ -81,7 +81,7 @@ public class UserService {
      * @return El usuario actualizado
      */
     @Transactional
-    public User updateUser(User user, UserDto updatedUserDto) throws RoleNotFoundException {
+    public User updateUser(User user, UserDTO updatedUserDto) throws RoleNotFoundException {
         try {
             // Actualizar datos básicos
             if (updatedUserDto.getFirstname() != null) {
