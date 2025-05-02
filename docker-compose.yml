@@ -10,7 +10,6 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./src/main/resources/schemas.sql:/docker-entrypoint-initdb.d/schemas.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pjohann21"]
       interval: 10s
@@ -19,13 +18,11 @@ services:
     networks:
       - spring-network
 
-  app:
+  backend:
     build:
       context: .
-      dockerfile: dockerfile
-    image: image-spring-app
-    container_name: spring-app
-    restart: always
+      dockerfile: backend/dockerfile
+    container_name: spring-backends
     depends_on:
       mysql:
         condition: service_healthy
@@ -33,9 +30,7 @@ services:
       - "8080:8080"
       - "35729:35729" # Puerto para LiveReload
     volumes:
-      - ./:/app
-      - maven-repo:/root/.m2
-      - /app/target
+      - ./backend:/app
     networks:
       - spring-network
     environment:
@@ -46,7 +41,6 @@ services:
 
 volumes:
   mysql-data:
-  maven-repo:
 
 networks:
   spring-network:

@@ -61,6 +61,9 @@ public class User implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role == null) {
+            throw new IllegalStateException("El usuario no tiene un rol asignado");
+        }
         return List.of(new SimpleGrantedAuthority(role.getName()));
     }
 

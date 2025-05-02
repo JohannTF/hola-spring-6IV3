@@ -17,10 +17,11 @@ public class DataInitializer {
         return args -> {
             // Verificar si ya existe el usuario administrador
             if (userRepository.findByUsername("sudo").isEmpty()) {
-                // Buscar el rol ADMIN en lugar de crearlo
+                // Buscar el rol ADMIN
                 Role adminRole = roleRepository.findByName("ROLE_ADMIN")
                         .orElseThrow(() -> new RuntimeException("Rol ADMIN no encontrado"));
 
+                // Crear el usuario administrador
                 User user = User.builder()
                         .username("sudo")
                         .lastname("user")

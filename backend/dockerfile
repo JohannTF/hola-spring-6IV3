@@ -8,11 +8,13 @@ WORKDIR /app
 RUN apk add --no-cache bash mysql-client
 
 # Copia el archivo pom.xml para descargar dependencias
-COPY pom.xml .
+COPY backend/pom.xml ./
 
 # Descarga dependencias
 RUN mvn dependency:go-offline -B
 
+# Copia el código fuente al contenedor
+COPY ./backend /app
+
 # Comando para iniciar la aplicación Spring Boot
-# Nota: El perfil se establece mediante la variable SPRING_PROFILES_ACTIVE en docker-compose.yml
-CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true"]
+CMD ["mvn", "spring-boot:run"]
