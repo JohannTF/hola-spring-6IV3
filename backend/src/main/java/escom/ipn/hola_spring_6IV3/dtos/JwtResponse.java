@@ -5,13 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Genera automáticamente los métodos getter, setter, toString, equals y hashCode
 @Data
-// Proporciona un patrón de diseño Builder para la clase
 @Builder
-// Genera un constructor sin argumentos
 @NoArgsConstructor
-// Genera un constructor con un argumento para cada campo en la clase
 @AllArgsConstructor
 public class JwtResponse {
     private String token;
