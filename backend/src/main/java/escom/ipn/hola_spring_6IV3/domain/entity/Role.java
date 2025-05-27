@@ -18,8 +18,15 @@ public enum Role {
     
     // Método helper para convertir de String a Enum
     public static Role fromString(String roleStr) throws RoleNotFoundException {
+        // Si el roleStr es null, usa ROLE_USER por defecto
+        if (roleStr == null || roleStr.trim().isEmpty()) {
+            return ROLE_USER;
+        }
+        
         for (Role role : Role.values()) {
-            if (role.name.equals("ROLE_" + roleStr.toUpperCase())) {
+            // Comprueba si coincide con o sin el prefijo ROLE_
+            if (role.name.equals(roleStr.toUpperCase()) || 
+                role.name.equals("ROLE_" + roleStr.toUpperCase())) {
                 return role;
             }
         }

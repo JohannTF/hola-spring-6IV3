@@ -27,11 +27,17 @@ public class ViewsController {
     @GetMapping("/inicio")
     public String home() {
         return "inicio";
-    }
-
+    }    
+    
     // Cambiado a "/libro-detalle" para coincidir con la plantilla HTML
     @GetMapping("/libro-detalle")
     public String bookDetails() {
+        return "libro-detalle";
+    }
+    
+    // Nueva ruta para detalles de libro con ID
+    @GetMapping("/libro/{id}")
+    public String bookDetailsWithId() {
         return "libro-detalle";
     }
     

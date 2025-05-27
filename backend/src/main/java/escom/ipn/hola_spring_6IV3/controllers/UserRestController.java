@@ -113,12 +113,27 @@ public class UserRestController {
     @PutMapping("/admin/update/{username}")
     public ResponseEntity<?> updateUserByAdmin(@PathVariable String username, @RequestBody UserDTO updatedUserDto) {
         try {
+            // Registrar los datos recibidos para depuración
+            System.out.println("Actualizando usuario: " + username);
+            System.out.println("Datos recibidos: " + updatedUserDto);
+            
             User user = userService.getUserByUsername(username);
             User updated = userService.updateUser(user, updatedUserDto);
+            
+            // Registrar el resultado
+            System.out.println("Usuario actualizado: " + updated.getUsername());
+            
             return ResponseEntity.ok(Map.of("user", updated));
         } catch (UserNotFoundException e) {
+            System.err.println("Usuario no encontrado: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
+        } catch (RuntimeException e) {
+            // Capturar específicamente la excepción de nombre de usuario duplicado
+            System.err.println("Error de runtime: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         } catch (Exception e) {
+            System.err.println("Error interno: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }

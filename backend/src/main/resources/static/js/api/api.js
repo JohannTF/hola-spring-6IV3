@@ -1,5 +1,5 @@
 /**
- * Funciones para realizar peticiones a la API
+ * Módulo de API - Contiene funciones para realizar peticiones HTTP al backend
  */
 
 /**
@@ -22,7 +22,9 @@ async function fetchWithConfig(url, options = {}, includeToken = true) {
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         } else {
-            return Promise.reject(new Error('No hay token de autenticación'));
+            // Redireccionar al login si no hay token y se requiere
+            window.location.href = '/login';
+            return Promise.reject('No hay token de autenticación');
         }
     }
     
@@ -37,17 +39,13 @@ async function fetchWithConfig(url, options = {}, includeToken = true) {
         
         // Verificar si la respuesta es exitosa
         if (!response.ok) {
-            // Obtener más información sobre el error
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                const errorData = await response.json();
-                console.error('Error detallado:', errorData);
-                throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
-            } else {
-                const errorText = await response.text();
-                console.error('Error en texto plano:', errorText);
-                throw new Error(`Error ${response.status}: ${errorText || response.statusText}`);
-            }
+            // Intenta obtener un mensaje de error detallado del servidor
+            const errorData = await response.json().catch(() => ({
+                message: `Error ${response.status}: ${response.statusText}`
+            }));
+            
+            // Lanzar error con mensaje del servidor o un mensaje predeterminado
+            throw new Error(errorData.message || errorData.error || `Error ${response.status}: ${response.statusText}`);
         }
         
         // Para respuestas sin contenido (204)
@@ -55,8 +53,8 @@ async function fetchWithConfig(url, options = {}, includeToken = true) {
             return null;
         }
         
-        // Intentar parsear la respuesta como JSON
-        return await response.json();
+        // Intentar parsear como JSON, si no funciona devolver el texto
+        return response.json().catch(() => response.text());
     } catch (error) {
         console.error('Error en la petición:', error);
         throw error;
@@ -112,3 +110,6 @@ function apiDelete(url) {
         method: 'DELETE'
     });
 }
+
+// Exportar las funciones para uso en otros módulos
+export { apiGet, apiPost, apiPut, apiDelete };

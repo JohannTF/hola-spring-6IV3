@@ -1,0 +1,17 @@
+static/
+├── css/
+│   └── (archivos css por componente o página)
+├── js/
+│   ├── api/
+│   │   └── api.js               <- Solo lógica de fetch/peticiones
+│   ├── components/
+│   │   ├── userTable.js         <- Construcción de tabla de usuarios
+│   │   └── modals.js            <- Lógica de apertura/cierre de modales
+│   ├── pages/
+│   │   ├── adminPage.js         <- Setup de página admin
+│   │   └── profilePage.js       <- Lógica específica para perfil
+│   ├── services/
+│   │   ├── userService.js       <- Funciones como getAllUsers, deleteUser, etc.
+│   ├── utils/
+│   │   └── domUtils.js          <- Manipulación DOM reutilizable
+│   └── main.js                  <- Punto de entrada global

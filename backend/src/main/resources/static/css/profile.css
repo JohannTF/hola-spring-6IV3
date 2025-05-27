@@ -1,6 +1,19 @@
 /* Estilos específicos para la página de perfil */
 
-header {
+/* Asegurar que el header global no se vea afectado */
+#global-header {
+    margin-bottom: 0;
+}
+
+/* Container específico para el perfil */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Banner del perfil */
+.profile-banner {
     background-color: var(--primary-color);
     color: var(--white);
     padding: 20px;
@@ -13,7 +26,26 @@ header {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-header h1 {
+.profile-banner h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Header original (para compatibilidad) - Solo para elementos dentro del container */
+.container header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container header h1 {
     font-size: 24px;
     font-weight: 600;
 }
@@ -73,7 +105,9 @@ label {
     color: var(--label-color); /* Mejora la visibilidad de etiquetas en modo oscuro */
 }
 
-input[type="text"] {
+/* Estilos de input específicos para el formulario del perfil */
+.profile-card input[type="text"],
+.profile-card input[type="password"] {
     width: 100%;
     padding: 12px 15px;
     border: 1px solid var(--border-color);
@@ -84,20 +118,23 @@ input[type="text"] {
     color: var(--text-color);
 }
 
-input[type="text"]:focus {
+.profile-card input[type="text"]:focus,
+.profile-card input[type="password"]:focus {
     border-color: var(--secondary-color);
     outline: none;
     box-shadow: 0 0 0 3px rgba(92, 137, 132, 0.2);
 }
 
-input[type="text"]:disabled {
+.profile-card input[type="text"]:disabled,
+.profile-card input[type="password"]:disabled {
     background-color: var(--light-gray);
     color: var(--text-color);
     opacity: 0.7;
     cursor: not-allowed;
 }
 
-[data-theme="dark"] input[type="text"]:disabled {
+[data-theme="dark"] .profile-card input[type="text"]:disabled,
+[data-theme="dark"] .profile-card input[type="password"]:disabled {
     color: var(--disabled-text);
 }
 
@@ -125,6 +162,30 @@ input[type="text"]:disabled {
 .btn-admin svg {
     width: 18px;
     height: 18px;
+}
+
+/* Contenedor de contraseña para el perfil */
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-container input {
+    flex: 1;
+    padding-right: 40px;
+}
+
+.password-container i {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    color: var(--secondary-color);
+    transition: color 0.3s;
+}
+
+.password-container i:hover {
+    color: var(--primary-color);
 }
 
 /* Loading */

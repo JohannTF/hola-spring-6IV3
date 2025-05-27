@@ -83,6 +83,16 @@ public class UserService {
     @Transactional
     public User updateUser(User user, UserDTO updatedUserDto) throws RoleNotFoundException {
         try {
+            // Actualizar el nombre de usuario si se proporciona
+            if (updatedUserDto.getUsername() != null && !updatedUserDto.getUsername().isEmpty()) {
+                // Verificar que el nuevo nombre de usuario no exista (a menos que sea el mismo)
+                if (!user.getUsername().equals(updatedUserDto.getUsername()) && 
+                    userRepository.findByUsername(updatedUserDto.getUsername()).isPresent()) {
+                    throw new RuntimeException("El nombre de usuario ya está en uso");
+                }
+                user.setUsername(updatedUserDto.getUsername());
+            }
+            
             // Actualizar datos básicos
             if (updatedUserDto.getFirstname() != null) {
                 user.setFirstname(updatedUserDto.getFirstname());
