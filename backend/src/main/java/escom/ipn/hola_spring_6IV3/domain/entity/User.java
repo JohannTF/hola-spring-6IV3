@@ -38,10 +38,16 @@ public class User implements UserDetails {
 
     private String lastname;
     private String firstname;
-    private String country;
-
+    private String country;    
+    
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "profile_image", columnDefinition = "LONGBLOB")
+    private byte[] profileImage; // Binary Large Object (BLOB)
+
+    @Column(name = "profile_image_type")
+    private String profileImageType; // Tipo de contenido (Multipurpose Internet Mail Extensions)
 
     @Enumerated(EnumType.STRING)
     private Role role;

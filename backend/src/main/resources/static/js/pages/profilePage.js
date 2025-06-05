@@ -4,6 +4,7 @@
 
 import { getUserInfo, updateUserInfo } from '../services/userService.js';
 import { logout } from '../services/authService.js';
+import { uploadProfileImage, getProfileImage, deleteProfileImage, fileToDataURL, resizeImage } from '../services/profileImageService.js';
 import { showToast, toggleElement } from '../utils/domUtils.js';
 import { redirectIfNotAuthenticated } from '../utils/validationUtils.js';
 
@@ -37,11 +38,184 @@ function togglePasswordVisibility(icon) {
 }
 
 /**
+ * Configura la funcionalidad de imagen de perfil
+ */
+function setupProfileImage() {
+    const profileImage = document.getElementById('profile-image');
+    const imageUpload = document.getElementById('image-upload');
+    const uploadBtn = document.getElementById('upload-image-btn');
+    const deleteBtn = document.getElementById('delete-image-btn');
+    const imageWrapper = document.querySelector('.profile-image-wrapper');
+
+    // Cargar imagen de perfil actual
+    loadCurrentProfileImage();
+
+    // Event listeners
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', () => {
+            if (imageUpload) imageUpload.click();
+        });
+    }
+
+    if (imageWrapper) {
+        imageWrapper.addEventListener('click', () => {
+            if (imageUpload) imageUpload.click();
+        });
+    }
+
+    if (imageUpload) {
+        imageUpload.addEventListener('change', handleImageUpload);
+    }
+
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', handleImageDelete);
+    }
+}
+
+/**
+ * Carga la imagen de perfil actual del usuario
+ */
+async function loadCurrentProfileImage() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        // Decodificar token para obtener username
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const username = payload.sub;
+
+        const imageData = await getProfileImage(username);
+        if (imageData && imageData.success && imageData.imageData) {
+            const profileImage = document.getElementById('profile-image');
+            const deleteBtn = document.getElementById('delete-image-btn');
+            
+            if (profileImage) {
+                profileImage.src = imageData.imageData;
+                profileImage.classList.remove('default-avatar');
+            }
+            
+            if (deleteBtn) {
+                toggleElement(deleteBtn, true);
+            }
+        }
+    } catch (error) {
+        // Silently fail - user doesn't have a profile image
+        console.log('No profile image found or error loading image:', error.message);
+    }
+}
+
+/**
+ * Maneja la subida de imagen de perfil
+ */
+async function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const uploadBtn = document.getElementById('upload-image-btn');
+    const deleteBtn = document.getElementById('delete-image-btn');
+    const profileImage = document.getElementById('profile-image');
+
+    try {
+        // Mostrar estado de carga
+        const originalUploadText = uploadBtn.innerHTML;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+        uploadBtn.disabled = true;
+
+        // Previsualización inmediata
+        const previewUrl = await fileToDataURL(file);
+        if (profileImage) {
+            profileImage.src = previewUrl;
+            profileImage.classList.remove('default-avatar');
+        }
+
+        // Redimensionar imagen si es necesario
+        const resizedImage = await resizeImage(file, 400, 400, 0.8);
+        
+        // Crear archivo desde blob redimensionado
+        const resizedFile = new File([resizedImage], file.name, {
+            type: file.type,
+            lastModified: Date.now(),
+        });
+
+        // Subir imagen
+        const response = await uploadProfileImage(resizedFile);
+        
+        if (response.success) {
+            showToast('Imagen de perfil actualizada correctamente', 'success');
+            toggleElement(deleteBtn, true);
+        } else {
+            throw new Error(response.message || 'Error al subir la imagen');
+        }
+
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        showToast(`Error al subir imagen: ${error.message}`, 'error');
+        
+        // Restaurar imagen por defecto en caso de error
+        if (profileImage) {
+            profileImage.src = '/images/default-avatar.svg';
+            profileImage.classList.add('default-avatar');
+        }
+        toggleElement(deleteBtn, false);
+    } finally {
+        // Restaurar estado del botón
+        const originalUploadText = '<i class="fas fa-upload"></i> Subir Foto';
+        uploadBtn.innerHTML = originalUploadText;
+        uploadBtn.disabled = false;
+        
+        // Limpiar input file
+        event.target.value = '';
+    }
+}
+
+/**
+ * Maneja la eliminación de imagen de perfil
+ */
+async function handleImageDelete() {
+    const deleteBtn = document.getElementById('delete-image-btn');
+    const profileImage = document.getElementById('profile-image');
+
+    try {
+        // Mostrar estado de carga
+        const originalDeleteText = deleteBtn.innerHTML;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+        deleteBtn.disabled = true;
+
+        const response = await deleteProfileImage();
+        
+        if (response.success) {
+            showToast('Imagen de perfil eliminada correctamente', 'success');
+            
+            // Restaurar imagen por defecto
+            if (profileImage) {
+                profileImage.src = '/images/default-avatar.svg';
+                profileImage.classList.add('default-avatar');
+            }
+            
+            toggleElement(deleteBtn, false);
+        } else {
+            throw new Error(response.message || 'Error al eliminar la imagen');
+        }
+
+    } catch (error) {
+        console.error('Error deleting image:', error);
+        showToast(`Error al eliminar imagen: ${error.message}`, 'error');
+    } finally {
+        // Restaurar estado del botón
+        const originalDeleteText = '<i class="fas fa-trash"></i> Eliminar';
+        deleteBtn.innerHTML = originalDeleteText;
+        deleteBtn.disabled = false;
+    }
+}
+
+/**
  * Configura la página de perfil de usuario
  */
-function setupProfilePage() {
-    // Verificar autenticación
+function setupProfilePage() {    // Verificar autenticación
     redirectIfNotAuthenticated();
+    
+    // Configurar funcionalidad de imagen de perfil
+    setupProfileImage();
     
     // Estado para guardar los datos originales
     let originalUserData = {};
