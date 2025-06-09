@@ -3,6 +3,8 @@
  * Proporciona una interfaz uniforme para mostrar libros en carruseles, grids, etc.
  */
 
+import { createFavoriteButton } from './favoriteButton.js';
+
 /**
  * Crea una tarjeta de libro reutilizable
  * @param {Object} book - Datos del libro
@@ -11,7 +13,7 @@
  */
 function createBookCard(book, options = {}) {
     const {
-        showFavoriteButton = false,
+        showFavoriteButton = true, // Cambiado a true por defecto
         size = 'medium', // 'small', 'medium', 'large'
         clickHandler = null,
         className = '',
@@ -53,15 +55,20 @@ function createBookCard(book, options = {}) {
             window.location.href = bookUrl;
         });
     }
-
+    
     // Agregar botón de favoritos si es necesario
-    if (showFavoriteButton && window.favoriteButton) {
+    if (showFavoriteButton) {
         const favoriteContainer = card.querySelector('.book-card__favorite-container');
-        const favoriteBtn = window.favoriteButton.create(book.id, {
-            bookTitle: book.title,
-            bookCoverId: book.coverId || book.cover_i
-        });
-        favoriteContainer.appendChild(favoriteBtn);
+        if (favoriteContainer) {
+            const bookData = {
+                bookId: book.id || book.key?.replace('/works/', '') || book.edition_key?.[0],
+                bookTitle: book.title || 'Título desconocido',
+                bookCoverId: book.coverId || book.cover_i
+            };
+            
+            const favoriteBtn = createFavoriteButton(bookData);
+            favoriteContainer.appendChild(favoriteBtn);
+        }
     }
 
     return card;

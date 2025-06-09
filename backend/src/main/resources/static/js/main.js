@@ -11,6 +11,7 @@ import { setupProfilePage } from './pages/profilePage.js';
 import { setupAdminPage } from './pages/adminPage.js';
 import { setupHomePage } from './pages/booksPage.js';
 import { setupBookDetailPage, loadBookDetails } from './pages/bookDetailPage.js';
+import { setupFavoritesPage } from './pages/favoritesPage.js';
 import { loadGlobalHeader } from './components/header.js';
 import { redirectIfNotAuthenticated } from './utils/validationUtils.js';
 
@@ -45,7 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     else if (currentPath === '/inicio') {
         setupHomePage();
-    }    else if (currentPath.startsWith('/libro/')) {
+    }
+    else if (currentPath === '/favorites') {
+        setupFavoritesPage();
+    }
+    else if (currentPath.startsWith('/libro/')) {
         setupBookDetailPage();
     }
     else if (currentPath === '/libro-detalle') {

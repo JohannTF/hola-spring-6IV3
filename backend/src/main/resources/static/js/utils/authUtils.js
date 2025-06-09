@@ -162,6 +162,14 @@ function isTokenValid() {
     return userInfo.expiresAt > new Date();
 }
 
+/**
+ * Obtiene el token de autenticación del localStorage
+ * @returns {string|null} - Token de autenticación o null si no existe
+ */
+function getAuthToken() {
+    return localStorage.getItem('token');
+}
+
 // Exportar funciones
 export {
     decodeJWTPayload,
@@ -171,5 +179,6 @@ export {
     redirectIfNotRole,
     redirectIfNotAdmin,
     getUserInfoFromToken,
-    isTokenValid
+    isTokenValid,
+    getAuthToken
 };

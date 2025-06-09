@@ -3,6 +3,8 @@
  * Proporciona una interfaz uniforme para mostrar información completa del libro
  */
 
+import { createFavoriteButton } from './favoriteButton.js';
+
 /**
  * Crea la vista detallada de un libro
  * @param {Object} book - Datos completos del libro
@@ -82,31 +84,23 @@ function renderBookDetail(book, container, options = {}) {
         </div>
     `;
 
-    // Agregar botón de favoritos si es necesario y está disponible
+    // Agregar botón de favoritos si es necesario
     if (showFavoriteButton) {
         const favoriteContainer = container.querySelector('.book-detail__favorite-container');
         if (favoriteContainer) {
-            // Intentar crear el botón de favoritos
-            setTimeout(() => {
-                if (window.favoriteButton && typeof window.favoriteButton.create === 'function') {
-                    try {
-                        const favoriteBtn = window.favoriteButton.create(book.id || extractBookId(book), {
-                            bookTitle: book.title,
-                            bookCoverId: book.covers?.[0] || book.cover_i,
-                            size: 'large'
-                        });
-                        favoriteContainer.appendChild(favoriteBtn);
-                    } catch (error) {
-                        console.warn('Error creating favorite button:', error);
-                        // Crear un botón de favoritos básico como fallback
-                        favoriteContainer.innerHTML = createBasicFavoriteButton(book);
-                    }
-                } else {
-                    console.warn('Favorite button service not available');
-                    // Crear un botón de favoritos básico como fallback
-                    favoriteContainer.innerHTML = createBasicFavoriteButton(book);
-                }
-            }, 100);
+            const bookData = {
+                bookId: book.id || extractBookId(book),
+                bookTitle: book.title || 'Título desconocido',
+                bookCoverId: book.covers?.[0] || book.cover_i
+            };
+            
+            try {
+                const favoriteBtn = createFavoriteButton(bookData);
+                favoriteBtn.classList.add('favorite-btn--large');
+                favoriteContainer.appendChild(favoriteBtn);
+            } catch (error) {
+                console.warn('Error creating favorite button:', error);
+            }
         }
     }
 
@@ -119,7 +113,7 @@ function renderBookDetail(book, container, options = {}) {
  */
 function createBasicFavoriteButton(book) {
     return `
-        <button class="favorite-btn basic-favorite-btn" data-book-id="${book.id || extractBookId(book)}">
+        <button class="favorite-btn favorite-btn--large" data-book-id="${book.id || extractBookId(book)}">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>

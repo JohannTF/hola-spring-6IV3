@@ -16,6 +16,21 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --table-stripe: rgba(92, 137, 132, 0.05);
     --table-hover: rgba(92, 137, 132, 0.1);
+    
+    /* Additional variables for favorites system */
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --text-muted: #95a5a6;
+    --card-background: #ffffff;
+    --background-secondary: #f8f9fa;
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
+    --accent-hover: #8fb5b6;
+    --danger-color: #e74c3c;
+    --primary-color-rgb: 64, 103, 103;
 }
 
 [data-theme="dark"] {
@@ -40,6 +55,20 @@
     --link-color: #6ab7ff; /* Nuevo - color para enlaces en modo oscuro */
     --header-text: #ffffff; /* Nuevo - color para textos de encabezados */
     --disabled-text: #b3b3b3; /* Nuevo - color para texto deshabilitado */
+    
+    /* Dark theme variables for favorites system */
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #7f8c8d;
+    --card-background: #2c3e50;
+    --background-secondary: #34495e;
+    --dark-card-background: #2c3e50;
+    --dark-border: #34495e;
+    --dark-background-secondary: #34495e;
+    --dark-text-primary: #ffffff;
+    --dark-input-background: #34495e;
+    --accent-hover: #5a7878;
+    --danger-color: #e74c3c;
 }
 
 * {
