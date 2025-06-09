@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/books.css">
+    <link rel="stylesheet" href="/css/book-components.css">
     <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Swiper Carousel -->
@@ -31,6 +32,7 @@
             <div class="loading-spinner-container"></div>
             <p>Cargando libros recomendados...</p>
         </div>        
+        
         <div id="categories-container">
             <!-- Las categorías se cargarán dinámicamente -->
             <div class="category-section" data-category="fiction"></div>
@@ -39,10 +41,13 @@
             <div class="category-section" data-category="mystery"></div>
             <div class="category-section" data-category="biography"></div>
         </div>
+        
         <div id="search-results" class="search-results hidden">
             <!-- Search results will be dynamically loaded here -->
         </div>
-    </div>    <!-- Swiper JS -->
+    </div>
+
+    <!-- Swiper JS -->
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <!-- Cargar módulo principal tipo ES module -->
     <script type="module" src="/js/main.js"></script>
