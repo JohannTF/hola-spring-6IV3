@@ -46,11 +46,11 @@ public class SecurityConfig {
                     // Permitir acceso a páginas y endpoints de autenticación
                     .requestMatchers("/login", "/register", "/auth/**").permitAll()
                     
-                    // Permitir acceso a páginas web para que JavaScript maneje la autenticación
-                    .requestMatchers("/", "/inicio", "/my-profile", "/libro-detalle", "/libro/**").permitAll()
+                    // Permitir acceso a todas las páginas web para que JavaScript maneje la autenticación
+                    .requestMatchers("/", "/inicio", "/my-profile", "/libro-detalle", "/libro/**", "/admin/**").permitAll()
                     
-                    // Rutas administrativas solo para rol ADMIN
-                    .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
+                    // Solo las APIs administrativas requieren rol ADMIN a nivel de Spring Security
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     
                     // Solo las APIs requieren autenticación a nivel de Spring Security
                     .requestMatchers("/api/**").authenticated()

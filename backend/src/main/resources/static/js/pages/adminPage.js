@@ -6,6 +6,7 @@ import { getAllUsers } from '../services/adminService.js';
 import { renderUserTable } from '../components/userTable.js';
 import { showToast } from '../utils/domUtils.js';
 import { redirectIfNotAuthenticated } from '../utils/validationUtils.js';
+import { redirectIfNotAdmin, isUserAdmin, getUserInfoFromToken } from '../utils/authUtils.js';
 import { 
     showAddUserModal, 
     closeAddUserModal, 
@@ -18,6 +19,18 @@ import {
 function setupAdminPage() {
     // Verificar autenticación
     redirectIfNotAuthenticated();
+
+    // Log información del usuario para depuración
+    const userInfo = getUserInfoFromToken();
+
+    // Verificar si el usuario es administrador usando el token
+    if (!isUserAdmin()) {
+        showToast('No tienes permisos para acceder a esta página', 'error');
+        setTimeout(() => {
+            window.location.href = '/inicio';
+        }, 2000);
+        return;
+    }
 
     // Cargar la tabla de usuarios
     loadUsersTable();
