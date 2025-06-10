@@ -153,7 +153,6 @@ function setupAddUserForm() {
                         loadUsersTable(); // Recargar la tabla
                     })
                     .catch(error => {
-                        console.error('Error al registrar:', error);
                         showToast(`Error al registrar usuario: ${error.message || 'Error desconocido'}`, 'error');
                         // Restaurar estado del botón
                         submitBtn.innerHTML = originalBtnText;

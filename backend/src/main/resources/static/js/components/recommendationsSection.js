@@ -14,7 +14,6 @@ import { createRecommendationsLoader, showLoader, hideLoader } from './loader.js
  */
 export async function createRecommendationsSection(container) {
     if (!container) {
-        console.error('Contenedor no encontrado para las recomendaciones');
         return;
     }
 

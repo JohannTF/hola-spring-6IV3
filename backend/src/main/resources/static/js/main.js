@@ -23,8 +23,6 @@ const currentPath = window.location.pathname;
 
 // Configurar la funcionalidad adecuada según la página
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando aplicación en:', currentPath);
-    
     // Páginas que requieren autenticación
     if (currentPath !== '/login' && currentPath !== '/register') {
         redirectIfNotAuthenticated();

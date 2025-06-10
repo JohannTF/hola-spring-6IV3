@@ -10,8 +10,6 @@ import { triggerFavoritesChange } from '../utils/favoritesListener.js';
  * Inicializa la página de favoritos
  */
 export function setupFavoritesPage() {
-    console.log('Inicializando página de favoritos');
-    
     loadFavorites();
     setupSearchFunctionality();
 }

@@ -23,8 +23,6 @@ function renderBookDetail(book, container, options = {}) {
         return;
     }
 
-    console.log('Rendering book detail for:', book);
-
     // Crear estructura HTML completa
     container.innerHTML = `
         <div class="book-detail">
@@ -99,7 +97,7 @@ function renderBookDetail(book, container, options = {}) {
                 favoriteBtn.classList.add('favorite-btn--large');
                 favoriteContainer.appendChild(favoriteBtn);
             } catch (error) {
-                console.warn('Error creating favorite button:', error);
+                // Silent error handling for favorite button creation
             }
         }
     }

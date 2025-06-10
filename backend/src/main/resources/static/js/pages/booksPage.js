@@ -218,7 +218,6 @@ function loadBooksByCategories() {
                     });
                 })
                 .catch(error => {
-                    console.error(`Error cargando categoría ${category}:`, error);
                     section.innerHTML = `<p class="error-message">Error al cargar los libros de ${getCategoryTitle(category)}.</p>`;
                 });
                 
@@ -301,7 +300,6 @@ async function loadRecommendationsSection() {
         // Buscar el contenedor principal donde insertar las recomendaciones
         const container = document.querySelector('.container');
         if (!container) {
-            console.error('Contenedor principal no encontrado');
             return;
         }
 
@@ -320,8 +318,6 @@ async function loadRecommendationsSection() {
 
             // Cargar la sección de recomendaciones
             await createRecommendationsSection(recommendationsContainer);
-        } else {
-            console.warn('No se encontraron las secciones hero o categories para insertar recomendaciones');
         }
     } catch (error) {
         console.error('Error cargando sección de recomendaciones:', error);

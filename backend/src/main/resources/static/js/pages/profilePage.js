@@ -146,9 +146,7 @@ async function handleImageUpload(event) {
         } else {
             throw new Error(response.message || 'Error al subir la imagen');
         }
-
     } catch (error) {
-        console.error('Error uploading image:', error);
         showToast(`Error al subir imagen: ${error.message}`, 'error');
         
         // Restaurar imagen por defecto en caso de error
@@ -196,9 +194,7 @@ async function handleImageDelete() {
         } else {
             throw new Error(response.message || 'Error al eliminar la imagen');
         }
-
     } catch (error) {
-        console.error('Error deleting image:', error);
         showToast(`Error al eliminar imagen: ${error.message}`, 'error');
     } finally {
         // Restaurar estado del botón

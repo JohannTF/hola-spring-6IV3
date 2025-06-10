@@ -101,8 +101,6 @@ function isUserAdmin() {
  */
 function redirectIfNotRole(requiredRole, redirectUrl = '/inicio') {
     if (!hasRole(requiredRole)) {
-        console.warn(`Acceso denegado. Rol requerido: ${requiredRole}`);
-        
         // Mostrar mensaje antes de redireccionar si hay función showToast disponible
         if (typeof window.showToast === 'function') {
             window.showToast('No tienes permisos para acceder a esta página', 'error');

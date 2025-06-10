@@ -13,24 +13,6 @@ class RecommendationService {
         this.userPreferences = null;
         this.cachedRecommendations = null;
         this.lastUpdate = null;
-        this.debugMode = false; // Agregar modo debug
-    }
-
-    /**
-     * Habilita o deshabilita el modo debug
-     */
-    setDebugMode(enabled) {
-        this.debugMode = enabled;
-        this.debugLog('Modo debug ' + (enabled ? 'habilitado' : 'deshabilitado'));
-    }
-
-    /**
-     * Log de debug
-     */
-    debugLog(message, data = null) {
-        if (this.debugMode) {
-            console.log(`[RecommendationService DEBUG] ${message}`, data || '');
-        }
     }
 
     /**
@@ -40,12 +22,9 @@ class RecommendationService {
      */
     async generateRecommendations(limit = 15) {
         try {
-            console.log('Generando recomendaciones para el usuario...');
-            
             // Verificar si tenemos recomendaciones en caché (válidas por 1 hora)
             if (this.cachedRecommendations && this.lastUpdate && 
                 Date.now() - this.lastUpdate < 3600000) {
-                console.log('Devolviendo recomendaciones desde caché');
                 return this.cachedRecommendations.slice(0, limit);
             }
 
@@ -54,13 +33,11 @@ class RecommendationService {
             const favorites = favoritesData.favorites || [];
 
             if (favorites.length === 0) {
-                console.log('Usuario sin favoritos, devolviendo recomendaciones generales');
                 return await this.getGeneralRecommendations(limit);
             }
 
             // Analizar preferencias del usuario
             this.userPreferences = await this.analyzeUserPreferences(favorites);
-            console.log('Preferencias del usuario:', this.userPreferences);
 
             // Generar recomendaciones basadas en preferencias
             const recommendations = await this.findRecommendedBooks(this.userPreferences, favorites, limit);
@@ -416,11 +393,8 @@ class RecommendationService {
     }
     
     formatBookForRecommendation(book) {
-        this.debugLog('Formateando libro para recomendación:', book);
-        
         // Determinar el ID de portada desde múltiples fuentes
         const coverId = book.cover_i || book.cover_id || book.covers?.[0] || book.coverId;
-        this.debugLog('Cover ID encontrado:', coverId);
         
         // Crear URL de portada con fallback robusto
         let coverUrl = '/images/default-cover.jpg';
@@ -429,7 +403,6 @@ class RecommendationService {
         } else if (book.coverUrl) {
             coverUrl = book.coverUrl;
         }
-        this.debugLog('Cover URL generada:', coverUrl);
 
         // Formatear autores correctamente
         let authorNames = ['Autor desconocido'];
@@ -444,9 +417,8 @@ class RecommendationService {
         } else if (typeof book.authors === 'string') {
             authorNames = [book.authors];
         }
-        this.debugLog('Autores formateados:', authorNames);
 
-        const formatted = {
+        return {
             id: book.key?.replace('/works/', '') || book.id || book.cover_edition_key,
             title: book.title || 'Título desconocido',
             authorNames: authorNames,
@@ -455,9 +427,6 @@ class RecommendationService {
             coverUrl: coverUrl,
             coverId: coverId
         };
-        
-        this.debugLog('Libro formateado:', formatted);
-        return formatted;
     }
 
     /**

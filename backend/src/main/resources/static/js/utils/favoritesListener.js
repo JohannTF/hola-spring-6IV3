@@ -17,18 +17,13 @@ export function setupGlobalFavoritesListener() {
     let debounceTimer;
     
     window.addEventListener('favoritesChanged', () => {
-        console.log(' Detectado cambio en favoritos');
-        
         // Debounce para evitar múltiples actualizaciones rápidas
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(async () => {
             try {
-                console.log('Actualizando recomendaciones...');
-                
                 // Solo actualizar si estamos en la página de inicio
                 if (window.location.pathname === '/inicio') {
                     await updateRecommendations();
-                    console.log(' Recomendaciones actualizadas');
                 }
             } catch (error) {
                 console.error(' Error actualizando recomendaciones:', error);
@@ -38,7 +33,6 @@ export function setupGlobalFavoritesListener() {
 
     // Marcar como configurado
     window._favoritesListenerConfigured = true;
-    console.log('Listener de favoritos configurado');
 }
 
 /**

@@ -29,7 +29,6 @@ function login(username, password) {
  * @returns {Promise} - Promesa con el resultado
  */
 function register(userData) {
-    console.log('Enviando datos de registro:', userData);
     return apiPost('/auth/register', userData, false);
 }
 

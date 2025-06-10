@@ -22,8 +22,6 @@ class BooksService {
      */
     async getBookDetails(bookId) {
         try {
-            console.log('Fetching book details for ID:', bookId);
-            
             // Obtener información básica del work
             const workResponse = await fetch(`${OPENLIBRARY_API.WORKS}${bookId}.json`);
             
@@ -32,7 +30,6 @@ class BooksService {
             }
             
             const workData = await workResponse.json();
-            console.log('Work data received:', workData);
             
             // Obtener información de autores si existe
             const authorsPromises = [];
@@ -78,11 +75,9 @@ class BooksService {
                 cover_i: workData.covers ? workData.covers[0] : null
             };
             
-            console.log('Formatted book data:', formattedBook);
             return formattedBook;
             
         } catch (error) {
-            console.error('Error fetching book details:', error);
             throw new Error('No se pudo obtener la información del libro');
         }
     }
@@ -118,9 +113,8 @@ class BooksService {
             }
             
             return [];
-            
+        
         } catch (error) {
-            console.error('Error searching books:', error);
             throw error;
         }
     }
@@ -156,9 +150,8 @@ class BooksService {
             }
             
             return [];
-            
+        
         } catch (error) {
-            console.error('Error fetching books by subject:', error);
             throw error;
         }
     }
