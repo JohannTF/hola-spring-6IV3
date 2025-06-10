@@ -13,6 +13,24 @@ class RecommendationService {
         this.userPreferences = null;
         this.cachedRecommendations = null;
         this.lastUpdate = null;
+        this.debugMode = false; // Agregar modo debug
+    }
+
+    /**
+     * Habilita o deshabilita el modo debug
+     */
+    setDebugMode(enabled) {
+        this.debugMode = enabled;
+        this.debugLog('Modo debug ' + (enabled ? 'habilitado' : 'deshabilitado'));
+    }
+
+    /**
+     * Log de debug
+     */
+    debugLog(message, data = null) {
+        if (this.debugMode) {
+            console.log(`[RecommendationService DEBUG] ${message}`, data || '');
+        }
     }
 
     /**
@@ -197,14 +215,20 @@ class RecommendationService {
             .sort((a, b) => b.score - a.score)
             .slice(0, limit);
     }
-
     /**
-     * Busca libros por autor
+     * Busca libros por autor usando múltiples métodos
      */
     async searchBooksByAuthor(author, limit = 10) {
         try {
+            // Usar booksService para búsqueda más robusta
             const books = await booksService.searchBooks(`author:"${author}"`, limit);
-            return books.map(book => this.formatBookForRecommendation(book));
+            return books.map(book => this.formatBookForRecommendation({
+                ...book,
+                author_name: [author], // Asegurar que el autor esté presente  
+                cover_i: book.coverId,
+                title: book.title,
+                key: book.key || `/works/${book.id}`
+            }));
         } catch (error) {
             console.warn(`Error buscando libros del autor ${author}:`, error);
             return [];
@@ -212,12 +236,29 @@ class RecommendationService {
     }
 
     /**
-     * Busca libros por materia
+     * Busca libros por materia/subject usando métodos alternativos
      */
     async searchBooksBySubject(subject, limit = 10) {
         try {
+            // Método 1: Usar booksService con búsqueda por subject
             const books = await booksService.searchBooks(`subject:"${subject}"`, limit);
-            return books.map(book => this.formatBookForRecommendation(book));
+            if (books.length > 0) {
+                return books.map(book => this.formatBookForRecommendation({
+                    ...book,
+                    subject: [subject],
+                    cover_i: book.coverId,
+                    key: book.key || `/works/${book.id}`
+                }));
+            }
+
+            // Método 2: Búsqueda alternativa si no hay resultados
+            const alternativeBooks = await booksService.searchBooks(subject, limit);
+            return alternativeBooks.map(book => this.formatBookForRecommendation({
+                ...book,
+                subject: [subject],
+                cover_i: book.coverId,
+                key: book.key || `/works/${book.id}`
+            }));
         } catch (error) {
             console.warn(`Error buscando libros de la materia ${subject}:`, error);
             return [];
@@ -225,19 +266,66 @@ class RecommendationService {
     }
 
     /**
-     * Obtiene libros populares en una materia específica
+     * Obtiene libros populares en una materia específica usando métodos alternativos
      */
     async getPopularBooksInSubject(subject, limit = 10) {
         try {
-            const response = await fetch(`https://openlibrary.org/subjects/${encodeURIComponent(subject.toLowerCase())}.json?limit=${limit}`);
-            if (!response.ok) throw new Error(`Error: ${response.status}`);
+            // Método 1: Intentar con booksService usando palabras clave de la materia
+            const searchTerms = this.getSubjectSearchTerms(subject);
             
-            const data = await response.json();
-            return (data.works || []).map(work => this.formatBookForRecommendation(work));
+            for (const term of searchTerms) {
+                try {
+                    const books = await booksService.searchBooks(term, Math.ceil(limit / 2));
+                    if (books.length > 0) {
+                        return books.slice(0, limit).map(book => this.formatBookForRecommendation({
+                            ...book,
+                            subject: [subject],
+                            cover_i: book.coverId,
+                            key: book.key || `/works/${book.id}`
+                        }));
+                    }
+                } catch (termError) {
+                    console.warn(`Error con término de búsqueda ${term}:`, termError);
+                    continue;
+                }
+            }
+
+            // Método 2: Fallback con términos generales
+            const fallbackBooks = await booksService.searchBooks(subject.replace(/[_-]/g, ' '), limit);
+            return fallbackBooks.map(book => this.formatBookForRecommendation({
+                ...book,
+                subject: [subject],
+                cover_i: book.coverId,
+                key: book.key || `/works/${book.id}`
+            }));
         } catch (error) {
             console.warn(`Error obteniendo libros populares de ${subject}:`, error);
             return [];
         }
+    }
+
+    /**
+     * Genera términos de búsqueda alternativos para una materia
+     */
+    getSubjectSearchTerms(subject) {
+        const baseTerms = [subject];
+        
+        // Mapear términos comunes
+        const subjectMappings = {
+            'fiction': ['fiction', 'novel', 'story'],
+            'fantasy': ['fantasy', 'magic', 'dragons'],
+            'science_fiction': ['science fiction', 'sci-fi', 'space'],
+            'mystery': ['mystery', 'detective', 'crime'],
+            'biography': ['biography', 'memoir', 'life story'],
+            'history': ['history', 'historical', 'past'],
+            'romance': ['romance', 'love story', 'romantic'],
+            'thriller': ['thriller', 'suspense', 'action'],
+            'horror': ['horror', 'scary', 'supernatural'],
+            'poetry': ['poetry', 'poems', 'verse']
+        };
+
+        const mappedTerms = subjectMappings[subject.toLowerCase()] || [];
+        return [...baseTerms, ...mappedTerms];
     }
 
     /**
@@ -277,19 +365,28 @@ class RecommendationService {
      * Recomendaciones generales para usuarios sin favoritos
      */
     async getGeneralRecommendations(limit = 15) {
-        const popularSubjects = ['fiction', 'fantasy', 'science_fiction', 'mystery', 'biography'];
+        const popularTerms = [
+            'popular fiction', 'bestseller', 'classic literature', 
+            'fantasy adventure', 'mystery thriller', 'science fiction',
+            'historical fiction', 'contemporary fiction', 'biography'
+        ];
         const recommendations = [];
 
-        for (const subject of popularSubjects) {
+        for (const term of popularTerms) {
             try {
-                const books = await this.getPopularBooksInSubject(subject, 3);
-                recommendations.push(...books.map(book => ({
+                const books = await booksService.searchBooks(term, 2);
+                recommendations.push(...books.map(book => this.formatBookForRecommendation({
                     ...book,
-                    reason: 'Recomendación general',
+                    cover_i: book.coverId,
+                    key: book.key || `/works/${book.id}`,
+                    reason: 'Recomendación popular',
                     score: Math.random() // Puntuación aleatoria para variedad
                 })));
+
+                // Evitar hacer demasiadas peticiones
+                if (recommendations.length >= limit) break;
             } catch (error) {
-                console.warn(`Error obteniendo recomendaciones generales para ${subject}:`, error);
+                console.warn(`Error obteniendo recomendaciones generales para ${term}:`, error);
             }
         }
 
@@ -317,17 +414,50 @@ class RecommendationService {
             .sort((a, b) => b[1] - a[1])
             .slice(0, limit);
     }
-
+    
     formatBookForRecommendation(book) {
-        return {
+        this.debugLog('Formateando libro para recomendación:', book);
+        
+        // Determinar el ID de portada desde múltiples fuentes
+        const coverId = book.cover_i || book.cover_id || book.covers?.[0] || book.coverId;
+        this.debugLog('Cover ID encontrado:', coverId);
+        
+        // Crear URL de portada con fallback robusto
+        let coverUrl = '/images/default-cover.jpg';
+        if (coverId) {
+            coverUrl = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
+        } else if (book.coverUrl) {
+            coverUrl = book.coverUrl;
+        }
+        this.debugLog('Cover URL generada:', coverUrl);
+
+        // Formatear autores correctamente
+        let authorNames = ['Autor desconocido'];
+        if (book.author_name && Array.isArray(book.author_name)) {
+            authorNames = book.author_name;
+        } else if (book.authors && Array.isArray(book.authors)) {
+            if (typeof book.authors[0] === 'string') {
+                authorNames = book.authors;
+            } else if (book.authors[0]?.name) {
+                authorNames = book.authors.map(a => a.name);
+            }
+        } else if (typeof book.authors === 'string') {
+            authorNames = [book.authors];
+        }
+        this.debugLog('Autores formateados:', authorNames);
+
+        const formatted = {
             id: book.key?.replace('/works/', '') || book.id || book.cover_edition_key,
             title: book.title || 'Título desconocido',
-            authorNames: book.author_name || book.authors || ['Autor desconocido'],
+            authorNames: authorNames,
             subjects: book.subject || book.subjects || [],
             first_publish_date: book.first_publish_year || book.first_publish_date,
-            coverUrl: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` : '/images/default-cover.jpg',
-            coverId: book.cover_i
+            coverUrl: coverUrl,
+            coverId: coverId
         };
+        
+        this.debugLog('Libro formateado:', formatted);
+        return formatted;
     }
 
     /**

@@ -223,19 +223,31 @@ function renderRecommendationsCarousel(recommendations, container) {
 
     // Limpiar contenedor
     container.innerHTML = '';
-
     // Formatear libros para el componente bookCard
-    const formattedBooks = recommendations.map(rec => ({
-        id: rec.id,
-        title: rec.title,
-        authors: rec.authorNames || ['Autor desconocido'],
-        authorNames: rec.authorNames || ['Autor desconocido'],
-        coverUrl: rec.coverUrl || '/images/default-cover.jpg',
-        coverId: rec.coverId,
-        publishYear: rec.first_publish_date,
-        first_publish_year: rec.first_publish_date,
-        reason: rec.reason // Información adicional para mostrar por qué se recomienda
-    }));
+    const formattedBooks = recommendations.map(rec => {
+        // Asegurar que tenemos una URL de portada válida
+        let coverUrl = rec.coverUrl;
+        if (!coverUrl || coverUrl === '/images/default-cover.jpg') {
+            // Intentar construir URL desde coverId si existe
+            if (rec.coverId) {
+                coverUrl = `https://covers.openlibrary.org/b/id/${rec.coverId}-M.jpg`;
+            } else {
+                coverUrl = '/images/default-cover.jpg';
+            }
+        }
+
+        return {
+            id: rec.id,
+            title: rec.title,
+            authors: rec.authorNames || ['Autor desconocido'],
+            authorNames: rec.authorNames || ['Autor desconocido'],
+            coverUrl: coverUrl,
+            coverId: rec.coverId,
+            publishYear: rec.first_publish_date,
+            first_publish_year: rec.first_publish_date,
+            reason: rec.reason // Información adicional para mostrar por qué se recomienda
+        };
+    });
 
     // Usar el componente de carrusel existente
     renderCarouselBooks(formattedBooks, container, {

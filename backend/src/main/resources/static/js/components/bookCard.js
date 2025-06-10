@@ -36,7 +36,8 @@ function createBookCard(book, options = {}) {
                 <img src="${book.coverUrl || '/images/default-cover.jpg'}" 
                      alt="${book.title || 'Libro'}" 
                      class="book-card__image"
-                     onerror="this.src='/images/default-cover.jpg'">
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='/images/default-cover.jpg';">
                 ${showFavoriteButton ? '<div class="book-card__favorite-container"></div>' : ''}
             </div>
             <div class="book-card__info">
