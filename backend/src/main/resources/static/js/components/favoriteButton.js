@@ -45,6 +45,9 @@ export function createFavoriteButton(bookData, onToggle = null) {
                 onToggle(isFavorite, bookData);
             }
             
+            // Notificar cambio en favoritos para actualizar recomendaciones
+            notifyFavoritesChange();
+            
         } catch (error) {
             console.error('Error al alternar favorito:', error);
             showFavoriteMessage('Error al actualizar favoritos', 'error');
@@ -156,4 +159,19 @@ function extractCoverIdFromSrc(src) {
     // Para imágenes de OpenLibrary
     const match = src.match(/\/covers\/[^\/]+\/([^-\.]+)/);
     return match ? match[1] : null;
+}
+
+/**
+ * Notifica cambios en favoritos para actualizar recomendaciones
+ */
+function notifyFavoritesChange() {
+    // Crear un evento personalizado
+    const event = new CustomEvent('favoritesChanged', {
+        detail: {
+            timestamp: Date.now()
+        }
+    });
+    
+    // Disparar el evento
+    window.dispatchEvent(event);
 }

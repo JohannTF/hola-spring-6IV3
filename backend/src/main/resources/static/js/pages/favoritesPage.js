@@ -4,6 +4,7 @@
 
 import { getUserFavorites } from '../services/favoriteService.js';
 import { createFavoriteButton } from '../components/favoriteButton.js';
+import { triggerFavoritesChange } from '../utils/favoritesListener.js';
 
 /**
  * Inicializa la página de favoritos

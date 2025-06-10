@@ -6,6 +6,9 @@ import { showToast, toggleElement } from '../utils/domUtils.js';
 import { redirectIfNotAuthenticated } from '../utils/validationUtils.js';
 import { loadGlobalHeader } from '../components/header.js';
 import { renderBookCards } from '../components/bookCard.js';
+import { createRecommendationsSection } from '../components/recommendationsSection.js';
+import { setupGlobalFavoritesListener } from '../utils/favoritesListener.js';
+import { createBooksLoader, showLoader, hideLoader } from '../components/loader.js';
 
 // URLs de la API de OpenLibrary
 const OPENLIBRARY_API = {
@@ -28,6 +31,12 @@ function setupHomePage() {
     
     // Cargar el header global
     loadGlobalHeader();
+    
+    // Configurar listener global de favoritos
+    setupGlobalFavoritesListener();
+    
+    // Cargar sección de recomendaciones
+    loadRecommendationsSection();
     
     // Cargar libros por categorías
     loadBooksByCategories();
@@ -176,6 +185,13 @@ function loadBooksByCategories() {
     const loadingContainer = document.getElementById('loading-container');
     
     if (loadingContainer) {
+        // Usar el nuevo componente loader
+        showLoader(loadingContainer, {
+            type: 'books',
+            size: 'medium',
+            message: 'Cargando libros recomendados...',
+            color: 'primary'
+        });
         toggleElement(loadingContainer, true, 'flex');
     }
     
@@ -275,6 +291,41 @@ function formatBookData(book) {
         coverId: coverId,
         publishYear: book.first_publish_year || ''
     };
+}
+
+/**
+ * Carga la sección de recomendaciones
+ */
+async function loadRecommendationsSection() {
+    try {
+        // Buscar el contenedor principal donde insertar las recomendaciones
+        const container = document.querySelector('.container');
+        if (!container) {
+            console.error('Contenedor principal no encontrado');
+            return;
+        }
+
+        // Buscar el punto de inserción (después de la hero-section, antes de categories-container)
+        const heroSection = container.querySelector('.hero-section');
+        const categoriesContainer = container.querySelector('#categories-container');
+        
+        if (heroSection && categoriesContainer) {
+            // Crear un contenedor para las recomendaciones si no existe
+            let recommendationsContainer = container.querySelector('#recommendations-section');
+            if (!recommendationsContainer) {
+                recommendationsContainer = document.createElement('div');
+                recommendationsContainer.id = 'recommendations-section';
+                container.insertBefore(recommendationsContainer, categoriesContainer);
+            }
+
+            // Cargar la sección de recomendaciones
+            await createRecommendationsSection(recommendationsContainer);
+        } else {
+            console.warn('No se encontraron las secciones hero o categories para insertar recomendaciones');
+        }
+    } catch (error) {
+        console.error('Error cargando sección de recomendaciones:', error);
+    }
 }
 
 export { setupHomePage };

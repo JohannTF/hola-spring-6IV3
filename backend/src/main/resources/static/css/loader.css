@@ -1,0 +1,441 @@
+/* =============================================
+   MODERN LOADER COMPONENT STYLES
+   ============================================= */
+
+/* Base loader styles */
+.modern-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    min-height: 120px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.loader-message {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* Size variations */
+.modern-loader--small {
+    padding: 1rem;
+    min-height: 80px;
+}
+
+.modern-loader--small .loader-message {
+    font-size: 0.875rem;
+}
+
+.modern-loader--medium {
+    padding: 2rem;
+    min-height: 120px;
+}
+
+.modern-loader--large {
+    padding: 3rem;
+    min-height: 160px;
+}
+
+.modern-loader--large .loader-message {
+    font-size: 1.125rem;
+}
+
+/* Color variations */
+.modern-loader--primary .loader-message {
+    color: var(--primary-color);
+}
+
+.modern-loader--secondary .loader-message {
+    color: var(--secondary-color);
+}
+
+.modern-loader--accent .loader-message {
+    color: var(--accent-color);
+}
+
+/* =============================================
+   DOTS LOADER
+   ============================================= */
+
+.dots-loader {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.dots-loader .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    animation: dotPulse 1.4s ease-in-out infinite both;
+}
+
+.dots-loader .dot:nth-child(1) { animation-delay: -0.32s; }
+.dots-loader .dot:nth-child(2) { animation-delay: -0.16s; }
+.dots-loader .dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dotPulse {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Size variations for dots */
+.modern-loader--small .dots-loader .dot {
+    width: 8px;
+    height: 8px;
+}
+
+.modern-loader--large .dots-loader .dot {
+    width: 16px;
+    height: 16px;
+}
+
+/* =============================================
+   BOOKS LOADER
+   ============================================= */
+
+.books-loader {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+    height: 60px;
+}
+
+.book {
+    width: 20px;
+    height: 50px;
+    position: relative;
+    animation: bookFloat 2s ease-in-out infinite;
+}
+
+.book-cover {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.book-cover::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 8%;
+    width: 84%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.book-cover::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 8%;
+    width: 60%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1px;
+}
+
+.book-1 { animation-delay: 0s; }
+.book-2 { animation-delay: 0.3s; }
+.book-3 { animation-delay: 0.6s; }
+
+.book-1 .book-cover { background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); }
+.book-2 .book-cover { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); }
+.book-3 .book-cover { background: linear-gradient(135deg, var(--accent-color), var(--secondary-color)); }
+
+@keyframes bookFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* Size variations for books */
+.modern-loader--small .books-loader {
+    height: 40px;
+}
+
+.modern-loader--small .book {
+    width: 16px;
+    height: 35px;
+}
+
+.modern-loader--large .books-loader {
+    height: 80px;
+}
+
+.modern-loader--large .book {
+    width: 24px;
+    height: 65px;
+}
+
+/* =============================================
+   MAGIC LOADER
+   ============================================= */
+
+.magic-loader {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.magic-circle {
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: magicSpin 1.5s linear infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(45deg, transparent, rgba(var(--primary-color-rgb), 0.1));
+}
+
+.magic-circle i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    animation: magicPulse 2s ease-in-out infinite;
+}
+
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    animation: sparkleFloat 2s ease-in-out infinite;
+}
+
+.sparkle-1 {
+    top: 10px;
+    right: 20px;
+    animation-delay: 0s;
+}
+
+.sparkle-2 {
+    bottom: 10px;
+    left: 15px;
+    animation-delay: 0.7s;
+}
+
+.sparkle-3 {
+    top: 50%;
+    right: 5px;
+    animation-delay: 1.4s;
+}
+
+@keyframes magicSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes magicPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes sparkleFloat {
+    0%, 100% {
+        transform: translateY(0px) scale(0.8);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translateY(-10px) scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Size variations for magic */
+.modern-loader--small .magic-loader {
+    width: 60px;
+    height: 60px;
+}
+
+.modern-loader--small .magic-circle i {
+    font-size: 1.2rem;
+}
+
+.modern-loader--large .magic-loader {
+    width: 100px;
+    height: 100px;
+}
+
+.modern-loader--large .magic-circle i {
+    font-size: 2rem;
+}
+
+/* =============================================
+   PULSE LOADER
+   ============================================= */
+
+.pulse-loader {
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+
+.pulse-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--primary-color);
+    animation: pulseScale 1.5s ease-in-out infinite;
+    position: relative;
+}
+
+.pulse-circle::before,
+.pulse-circle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--primary-color);
+    animation: pulseScale 1.5s ease-in-out infinite;
+}
+
+.pulse-circle::before {
+    animation-delay: 0.5s;
+}
+
+.pulse-circle::after {
+    animation-delay: 1s;
+}
+
+@keyframes pulseScale {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* Size variations for pulse */
+.modern-loader--small .pulse-loader {
+    width: 40px;
+    height: 40px;
+}
+
+.modern-loader--large .pulse-loader {
+    width: 80px;
+    height: 80px;
+}
+
+/* =============================================
+   SPECIFIC LOADER VARIATIONS
+   ============================================= */
+
+/* Recommendations loader */
+.recommendations-loader {
+    background: rgba(var(--primary-color-rgb), 0.02);
+    border-radius: var(--border-radius);
+    border: 1px dashed rgba(var(--primary-color-rgb), 0.2);
+}
+
+/* Books loader for main page */
+.books-loader.books-loader {
+    background: rgba(var(--secondary-color-rgb), 0.02);
+    border-radius: var(--border-radius);
+}
+
+/* Search loader */
+.search-loader {
+    padding: 1rem;
+    min-height: 60px;
+}
+
+/* =============================================
+   RESPONSIVE DESIGN
+   ============================================= */
+
+@media (max-width: 768px) {
+    .modern-loader {
+        padding: 1.5rem 1rem;
+        min-height: 100px;
+    }
+    
+    .modern-loader--large {
+        padding: 2rem 1rem;
+        min-height: 120px;
+    }
+    
+    .books-loader {
+        height: 50px;
+    }
+    
+    .book {
+        width: 18px;
+        height: 40px;
+    }
+    
+    .magic-loader {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .pulse-loader {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* =============================================
+   DARK THEME SUPPORT
+   ============================================= */
+
+[data-theme="dark"] .modern-loader--primary .loader-message {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .dots-loader .dot {
+    background: var(--accent-color);
+}
+
+[data-theme="dark"] .magic-circle {
+    border-top-color: var(--accent-color);
+    background: linear-gradient(45deg, transparent, rgba(var(--accent-color-rgb), 0.1));
+}
+
+[data-theme="dark"] .magic-circle i {
+    color: var(--accent-color);
+}
+
+[data-theme="dark"] .pulse-circle,
+[data-theme="dark"] .pulse-circle::before,
+[data-theme="dark"] .pulse-circle::after {
+    background: var(--accent-color);
+}

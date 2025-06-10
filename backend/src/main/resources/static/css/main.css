@@ -17,6 +17,11 @@
     --table-stripe: rgba(92, 137, 132, 0.05);
     --table-hover: rgba(92, 137, 132, 0.1);
     
+    /* RGB Values for alpha transparency */
+    --primary-color-rgb: 64, 103, 103;
+    --secondary-color-rgb: 92, 137, 132;
+    --accent-color-rgb: 165, 201, 202;
+    
     /* Additional variables for favorites system */
     --text-primary: #2c3e50;
     --text-secondary: #7f8c8d;
