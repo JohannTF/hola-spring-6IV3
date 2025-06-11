@@ -28,9 +28,29 @@
             Cargando información...
           </p>
         </div>
-      </div>
-
+      </div>      
       <div class="content-wrapper">
+        <div class="profile-image-card">
+          <div class="profile-image-container">
+            <div class="profile-image-wrapper">
+              <img id="profile-image" src="/images/default-avatar.svg" alt="Foto de perfil" class="profile-image">
+              <div class="image-overlay">
+                <i class="fas fa-camera"></i>
+              </div>
+            </div>
+            <div class="profile-image-actions">
+              <button id="upload-image-btn" class="btn btn-secondary">
+                <i class="fas fa-upload"></i>
+                Subir Foto
+              </button>
+              <button id="delete-image-btn" class="btn btn-danger" style="display: none;">
+                <i class="fas fa-trash"></i>
+                Eliminar
+              </button>
+            </div>
+            <input type="file" id="image-upload" accept="image/*" style="display: none;">
+          </div>
+        </div>
         <div class="profile-card">
           <div class="profile-header">
             <h2>Información Personal</h2>

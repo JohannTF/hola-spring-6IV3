@@ -28,7 +28,6 @@ function updateUserInfo(userData) {
 async function isAdmin() {
     try {
         const data = await getUserInfo();
-        console.log('Datos de usuario recibidos:', data); // Log para depurar
         
         if (!data) return false;
         
@@ -71,7 +70,6 @@ async function isAdmin() {
             }
         }
         
-        console.log('¿Es usuario admin?', isAdminUser);
         return isAdminUser;
     } catch (error) {
         console.error('Error al verificar rol de admin:', error);

@@ -132,8 +132,6 @@ function setupRegisterForm() {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                     
-                    // Mostrar más detalles del error para depuración
-                    console.error('Error completo:', error);
                     showFormError(errorMsg, 'Error en el registro: ' + error.message);
                 });
         });

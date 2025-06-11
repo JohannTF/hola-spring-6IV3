@@ -1,21 +1,12 @@
 /**
- * Página de detalle de libro - Funcionalidad específica para mostrar detalles de un libro
+ * Página de detalle de libro actualizada para usar componentes reutilizables
  */
 
 import { showToast, toggleElement } from '../utils/domUtils.js';
 import { redirectIfNotAuthenticated } from '../utils/validationUtils.js';
 import { loadGlobalHeader } from '../components/header.js';
+import { renderBookDetail, createBookDetailSkeleton } from '../components/bookDetailView.js';
 import { getBooksService } from '../services/booksService.js';
-
-// Obtener el servicio de libros
-const booksService = getBooksService();
-
-// Constantes
-const DEFAULT_COVER = '/images/default-cover.jpg';
-const OPENLIBRARY_API = {
-    COVER: 'https://covers.openlibrary.org/b/id/',
-    AUTHOR: 'https://openlibrary.org/authors/',
-};
 
 /**
  * Inicializa la página de detalles del libro
@@ -52,39 +43,33 @@ function loadBookDetails() {
     }
     
     // Referencias a elementos del DOM
-    const loadingContainer = document.getElementById('loading-container');
-    const bookDetailsContainer = document.getElementById('book-details');
-    const errorContainer = document.getElementById('error-container');
+    const container = document.getElementById('book-details-container') || 
+                     document.querySelector('.container') ||
+                     document.querySelector('main');
     
-    // Verificar que existan los elementos necesarios
-    if (!bookDetailsContainer) {
-        console.error('No se encontró el contenedor de detalles del libro');
+    if (!container) {
+        console.error('No se encontró el contenedor principal');
+        showBookError('Error en la estructura de la página');
         return;
     }
     
-    // Mostrar pantalla de carga
-    if (loadingContainer) toggleElement(loadingContainer, true, 'flex');
     
-    // Ocultar mensaje de error si existe
-    if (errorContainer) toggleElement(errorContainer, false);
+    // Mostrar skeleton loader
+    createBookDetailSkeleton(container);
     
-    // Ocultar detalles mientras carga
-    toggleElement(bookDetailsContainer, false);
+    // Obtener el servicio de libros
+    const booksService = getBooksService();
     
     // Obtener datos del libro
     booksService.getBookDetails(bookId)
         .then(book => {
-            // Ocultar loading
-            if (loadingContainer) toggleElement(loadingContainer, false);
             
-            // Mostrar detalles
-            toggleElement(bookDetailsContainer, true, 'grid');
-            
-            // Actualizar título de la página
-            document.title = `${book.title || 'Libro'} | OpenBook`;
-            
-            // Llenar la información del libro
-            updateBookDetails(book);
+            // Renderizar vista detallada usando el componente
+            renderBookDetail(book, container, {
+                showFavoriteButton: true,
+                showBackButton: true,
+                backUrl: '/inicio'
+            });
         })
         .catch(error => {
             console.error('Error cargando detalles del libro:', error);
@@ -93,125 +78,48 @@ function loadBookDetails() {
 }
 
 /**
- * Actualiza la interfaz con los detalles del libro
- * @param {Object} book - Datos del libro 
+ * Muestra un mensaje de error
  */
-function updateBookDetails(book) {
-    // Título
-    const titleElement = document.getElementById('book-title');
-    if (titleElement) {
-        titleElement.textContent = book.title || 'Título desconocido';
-    }
+function showBookError(message) {
+    const container = document.getElementById('book-details-container') || 
+                     document.querySelector('.container') ||
+                     document.querySelector('main');
     
-    // Portada
-    const coverElement = document.getElementById('book-cover');
-    if (coverElement) {
-        if (book.covers && book.covers.length > 0) {
-            coverElement.src = `${OPENLIBRARY_API.COVER}${book.covers[0]}-L.jpg`;
-            coverElement.onerror = () => {
-                coverElement.src = DEFAULT_COVER;
-            };
-        } else {
-            coverElement.src = DEFAULT_COVER;
-        }
-    }
-    
-    // Autores
-    const authorsElement = document.getElementById('book-authors');
-    if (authorsElement) {
-        authorsElement.textContent = book.authorNames?.join(', ') || 'Autor desconocido';
-    }
-    
-    // Descripción
-    const descriptionElement = document.getElementById('book-description-text');
-    if (descriptionElement) {
-        if (book.description) {
-            if (typeof book.description === 'string') {
-                descriptionElement.textContent = book.description;
-            } else if (book.description.value) {
-                descriptionElement.textContent = book.description.value;
-            }
-        } else {
-            descriptionElement.textContent = 'No hay descripción disponible para este libro.';
-        }
-    }
-    
-    // Fecha de publicación
-    const publishDateElement = document.getElementById('book-publish-date');
-    if (publishDateElement) {
-        publishDateElement.textContent = book.first_publish_date || 'Fecha desconocida';
-    }
-    
-    // Editorial
-    const publisherElement = document.getElementById('book-publisher');
-    if (publisherElement) {
-        publisherElement.textContent = book.publishers ? book.publishers.join(', ') : 'Editorial desconocida';
-    }
-    
-    // ISBN
-    const isbnElement = document.getElementById('book-isbn');
-    if (isbnElement && isbnElement.querySelector('span')) {
-        if (book.isbn_13) {
-            isbnElement.querySelector('span').textContent = book.isbn_13[0];
-        } else if (book.isbn_10) {
-            isbnElement.querySelector('span').textContent = book.isbn_10[0];
-        }
-    }
-    
-    // Páginas
-    const pagesElement = document.getElementById('book-pages');
-    if (pagesElement && pagesElement.querySelector('span')) {
-        pagesElement.querySelector('span').textContent = book.number_of_pages || '-';
-    }
-    
-    // Categorías/Subjects
-    const subjectsElement = document.getElementById('book-subjects-list');
-    if (subjectsElement) {
-        subjectsElement.innerHTML = '';
-        
-        if (book.subjects && book.subjects.length > 0) {
-            book.subjects.slice(0, 10).forEach(subject => {
-                const tagElement = document.createElement('span');
-                tagElement.className = 'subject-tag';
-                tagElement.textContent = subject;
-                subjectsElement.appendChild(tagElement);
-            });
-        } else {
-            subjectsElement.innerHTML = '<p>No hay categorías disponibles.</p>';
-        }
-    }
-    
-    // Link a OpenLibrary
-    const openLibraryLink = document.getElementById('open-library-link');
-    if (openLibraryLink) {
-        openLibraryLink.href = `https://openlibrary.org${book.key}`;
+    if (container) {
+        container.innerHTML = `
+            <div class="error-container" style="
+                text-align: center; 
+                padding: 60px 20px; 
+                background: #ffffff; 
+                border-radius: 12px; 
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                margin: 20px auto;
+                max-width: 600px;
+            ">
+                <div class="error-icon" style="font-size: 4rem; color: #e74c3c; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 style="color: #2c3e50; margin-bottom: 16px;">No se pudo cargar el libro</h2>
+                <p style="color: #7f8c8d; margin-bottom: 30px; line-height: 1.6;">${message}</p>
+                <a href="/inicio" class="btn btn-primary" style="
+                    display: inline-block;
+                    background-color: #3498db;
+                    color: white;
+                    padding: 12px 24px;
+                    text-decoration: none;
+                    border-radius: 6px;
+                    font-weight: 500;
+                    transition: background-color 0.3s ease;
+                ">Volver a inicio</a>
+            </div>
+        `;
     }
 }
 
-/**
- * Muestra un mensaje de error en la página de detalles
- * @param {string} message - Mensaje de error
- */
-function showBookError(message) {
-    console.log("Mostrando error:", message);
-    const loadingContainer = document.getElementById('loading-container');
-    const bookDetailsContainer = document.getElementById('book-details');
-    const errorContainer = document.getElementById('error-container');
-    const errorMessage = document.getElementById('error-message');
-    
-    if (loadingContainer) loadingContainer.style.display = 'none';
-    if (bookDetailsContainer) bookDetailsContainer.style.display = 'none';
-    
-    if (errorContainer) {
-        errorContainer.style.display = 'flex';
-        
-        if (errorMessage) {
-            errorMessage.textContent = message;
-        }
-    } else {
-        console.error("Contenedor de error no encontrado");
-        showToast(`Error: ${message}`, 'error');
-    }
+// Exportar funciones
+if (typeof window !== 'undefined') {
+    window.setupBookDetailPage = setupBookDetailPage;
+    window.loadBookDetails = loadBookDetails;
 }
 
 export { setupBookDetailPage, loadBookDetails };

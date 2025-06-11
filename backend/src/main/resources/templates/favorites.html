@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Favoritos - OpenBook</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/books.css">
+    <link rel="stylesheet" href="/css/favorites.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Global -->
+    <header id="global-header"></header>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Encabezado de la página -->
+            <div class="page-header">
+                <div class="page-title-section">
+                    <h1 class="page-title">
+                        <i class="fas fa-heart"></i>
+                        Mis Favoritos
+                    </h1>
+                    <p class="page-subtitle">
+                        Tienes <span id="favorites-count">0</span> libros en tu lista de favoritos
+                    </p>
+                </div>
+                
+                <!-- Barra de búsqueda -->
+                <div class="favorites-search-section">
+                    <div class="search-input-group">
+                        <i class="fas fa-search"></i>
+                        <input 
+                            type="text" 
+                            id="favorites-search" 
+                            placeholder="Buscar en tus favoritos..."
+                            autocomplete="off"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado de carga -->
+            <div id="favorites-loading" class="loading-state">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <p>Cargando tus favoritos...</p>
+            </div>
+
+            <!-- Contenedor de favoritos -->
+            <div id="favorites-container" class="favorites-grid">
+                <!-- Las tarjetas de favoritos se cargarán aquí dinámicamente -->
+            </div>
+
+            <!-- Estado vacío -->
+            <div id="favorites-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">
+                    <i class="far fa-heart"></i>
+                </div>
+                <h3>No tienes favoritos aún</h3>
+                <p>Los libros que marques como favoritos aparecerán aquí. ¡Comienza explorando nuestra colección!</p>
+                <a href="/inicio" class="btn btn-primary">
+                    <i class="fas fa-book-open"></i>
+                    Explorar Libros
+                </a>
+            </div>
+
+            <!-- Sin resultados de búsqueda -->
+            <div id="no-search-results" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>No se encontraron resultados</h3>
+                <p>No hay favoritos que coincidan con tu búsqueda. Intenta con otros términos.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>

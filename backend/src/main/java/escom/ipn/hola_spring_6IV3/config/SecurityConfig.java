@@ -44,13 +44,19 @@ public class SecurityConfig {
                     .requestMatchers("/js/**", "/styles/**", "/css/**", "/images/**").permitAll()
                     
                     // Permitir acceso a páginas y endpoints de autenticación
-                    .requestMatchers("/login", "/register", "/auth/**", "/**").permitAll()
+                    .requestMatchers("/login", "/register", "/auth/**").permitAll()
                     
-                    // Rutas administrativas solo para rol ADMIN
+                    // Permitir acceso a todas las páginas web para que JavaScript maneje la autenticación
+                    .requestMatchers("/", "/inicio", "/my-profile", "/libro-detalle", "/libro/**", "/admin/**").permitAll()
+                    
+                    // Solo las APIs administrativas requieren rol ADMIN a nivel de Spring Security
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     
-                    // Todas las demás rutas requieren autenticación
-                    .anyRequest().authenticated()
+                    // Solo las APIs requieren autenticación a nivel de Spring Security
+                    .requestMatchers("/api/**").authenticated()
+                    
+                    // Permitir todas las demás rutas (páginas web)
+                    .anyRequest().permitAll()
             )
             
             // Configurar política de sesión sin estado (stateless) para JWT

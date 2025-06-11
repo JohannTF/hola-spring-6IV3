@@ -332,11 +332,6 @@ function saveUser(button, currentUsername, originalUsername) {
     // Asegurarse de que estamos usando el nombre de usuario correcto para identificación
     const usernameToFind = originalUsername || currentUsername;
     
-    console.log('Guardando usuario:', {
-        originalUsername: usernameToFind,
-        newData: { username: newUsername, firstname, lastname, role }
-    });
-    
     // Crear objeto con datos actualizados
     const userData = {
         username: newUsername, // Enviamos el nuevo nombre de usuario
@@ -368,9 +363,8 @@ function saveUser(button, currentUsername, originalUsername) {
                 // Restaurar botones y actualizar dataset con el nuevo nombre de usuario
                 restoreActionButtons(row, userData.username);
                 
-                // Log para depuración
-                console.log('Usuario actualizado correctamente:', userData.username);
-            })            .catch(error => {
+            })
+            .catch(error => {
                 console.error('Error al actualizar usuario:', error);
                 
                 // Mostrar un mensaje de error más detallado

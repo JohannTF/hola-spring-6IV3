@@ -1,5 +1,6 @@
 package escom.ipn.hola_spring_6IV3.service;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import escom.ipn.hola_spring_6IV3.domain.dto.ProfileImageDTO;
 import escom.ipn.hola_spring_6IV3.domain.dto.UserDTO;
 import escom.ipn.hola_spring_6IV3.domain.entity.Role;
 import escom.ipn.hola_spring_6IV3.domain.entity.User;
@@ -64,13 +66,24 @@ public class UserService {
      * Convierte una entidad User a UserDto
      */
     private UserDTO convertToDto(User user) {
-        return UserDTO.builder()
+        UserDTO.UserDTOBuilder builder = UserDTO.builder()
                 .username(user.getUsername())
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
                 .country(user.getCountry())
-                .role(user.getRole().getName().replace("ROLE_", ""))
-                .build();
+                .role(user.getRole().getName().replace("ROLE_", ""));
+        
+        // Convertir imagen de perfil a Base64 si existe
+        if (user.getProfileImage() != null && user.getProfileImage().length > 0) {
+            String base64Image = Base64.getEncoder().encodeToString(user.getProfileImage());
+            String imageDataUrl = "data:" + 
+                (user.getProfileImageType() != null ? user.getProfileImageType() : "image/jpeg") + 
+                ";base64," + base64Image;
+            builder.profileImage(imageDataUrl);
+            builder.profileImageType(user.getProfileImageType());
+        }
+        
+        return builder.build();
     }
     
     /**
@@ -147,5 +160,34 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
         userRepository.delete(user);
+    }    
+    
+    /**
+     * Actualiza la imagen de perfil de un usuario
+     */
+    @Transactional
+    public void updateProfileImage(String username, byte[] imageBytes, String contentType) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+        user.setProfileImage(imageBytes);
+        user.setProfileImageType(contentType);
+        userRepository.save(user);
+    }
+
+    /**
+     * Obtiene la imagen de perfil de un usuario
+     */
+    public ProfileImageDTO getProfileImage(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+        
+        if (user.getProfileImage() == null) {
+            return null;
+        }
+        
+        return ProfileImageDTO.builder()
+                .imageBytes(user.getProfileImage())
+                .contentType(user.getProfileImageType())
+                .build();
     }
 }

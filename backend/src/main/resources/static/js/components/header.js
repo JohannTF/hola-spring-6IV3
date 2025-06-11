@@ -32,6 +32,7 @@ function loadGlobalHeader() {
             <nav class="header-nav">
                 <ul>
                     <li><a href="/inicio" class="nav-link"><i class="fas fa-home"></i> Inicio</a></li>
+                    <li><a href="/favorites" class="nav-link"><i class="fas fa-heart"></i> Favoritos</a></li>
                     <li><a href="/my-profile" class="nav-link"><i class="fas fa-user"></i> Mi Perfil</a></li>
                     <li id="admin-nav-item" style="display:none"><a href="/admin/all-users" class="nav-link"><i class="fas fa-users-cog"></i> Administrar</a></li>
                     <li><a href="#" id="logout-btn" class="nav-link"><i class="fas fa-sign-out-alt"></i> Salir</a></li>

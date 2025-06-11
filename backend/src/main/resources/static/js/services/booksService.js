@@ -1,199 +1,176 @@
 /**
- * Servicio de libros - Funciones para interactuar con la API de OpenLibrary
+ * Servicio para obtener información de libros desde OpenLibrary
  */
 
-// URLs de la API de OpenLibrary
 const OPENLIBRARY_API = {
     SEARCH: 'https://openlibrary.org/search.json',
-    WORK: 'https://openlibrary.org/works/',
-    COVER: 'https://covers.openlibrary.org/b/id/',
-    AUTHOR: 'https://openlibrary.org/authors/',
-    SUBJECT: 'https://openlibrary.org/subjects/'
+    WORKS: 'https://openlibrary.org/works/',
+    AUTHORS: 'https://openlibrary.org/authors/',
+    COVERS: 'https://covers.openlibrary.org/b/id/',
+    SUBJECTS: 'https://openlibrary.org/subjects/'
 };
 
-// Imagen de portada por defecto
-const DEFAULT_COVER = '/images/default-cover.jpg';
-
 /**
- * Busca libros por un término
- * @param {string} query - Término de búsqueda
- * @param {number} limit - Límite de resultados
- * @returns {Promise<Array>} - Libros encontrados
+ * Servicio de libros
  */
-async function searchBooks(query, limit = 20) {
-    try {
-        const response = await fetch(`${OPENLIBRARY_API.SEARCH}?q=${encodeURIComponent(query)}&limit=${limit}`);
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.docs && data.docs.length > 0) {
-            return data.docs.map(formatSearchResult);
-        }
-        
-        return [];
-    } catch (error) {
-        console.error('Error en searchBooks:', error);
-        throw error;
-    }
-}
-
-/**
- * Obtiene libros por categoría
- * @param {string} category - Categoría a buscar
- * @param {number} limit - Límite de resultados
- * @returns {Promise<Array>} - Libros de esa categoría
- */
-async function getBooksByCategory(category, limit = 10) {
-    try {
-        const response = await fetch(`${OPENLIBRARY_API.SUBJECT}${category}.json?limit=${limit}`);
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.works && Array.isArray(data.works)) {
-            return data.works.map(formatBookData);
-        }
-        
-        return [];
-    } catch (error) {
-        console.error(`Error en getBooksByCategory (${category}):`, error);
-        throw error;
-    }
-}
-
-/**
- * Obtiene detalles de un libro por su ID
- * @param {string} bookId - ID del libro
- * @returns {Promise<Object>} - Detalles del libro
- */
-async function getBookDetails(bookId) {
-    try {
-        const response = await fetch(`${OPENLIBRARY_API.WORK}${bookId}.json`);
-        if (!response.ok) {
-            throw new Error(`Error al cargar el libro (${response.status})`);
-        }
-        
-        const book = await response.json();
-        
-        // Si hay autores, cargar sus nombres
-        if (book.authors && book.authors.length > 0) {
-            book.authorNames = await getAuthorsInfo(book.authors);
-        } else {
-            book.authorNames = ['Autor desconocido'];
-        }
-        
-        return book;
-    } catch (error) {
-        console.error('Error en getBookDetails:', error);
-        throw error;
-    }
-}
-
-/**
- * Obtiene información de los autores
- * @param {Array} authorRefs - Referencias a autores
- * @returns {Promise<Array>} - Nombres de los autores
- */
-async function getAuthorsInfo(authorRefs) {
-    const authorPromises = authorRefs.map(async (authorRef) => {
-        // Extraer ID del autor
-        const authorKey = authorRef.author.key;
-        if (!authorKey) return 'Autor desconocido';
-        
+class BooksService {
+    
+    /**
+     * Obtiene los detalles completos de un libro
+     * @param {string} bookId - ID del libro (work ID)
+     * @returns {Promise<Object>} - Datos completos del libro
+     */
+    async getBookDetails(bookId) {
         try {
-            // Cargar datos del autor
-            const response = await fetch(`https://openlibrary.org${authorKey}.json`);
-            if (!response.ok) return 'Autor desconocido';
+            // Obtener información básica del work
+            const workResponse = await fetch(`${OPENLIBRARY_API.WORKS}${bookId}.json`);
             
-            const author = await response.json();
-            return author.name || 'Autor desconocido';
+            if (!workResponse.ok) {
+                throw new Error(`Error fetching work: ${workResponse.status}`);
+            }
+            
+            const workData = await workResponse.json();
+            
+            // Obtener información de autores si existe
+            const authorsPromises = [];
+            if (workData.authors && workData.authors.length > 0) {
+                workData.authors.forEach(author => {
+                    if (author.author && author.author.key) {
+                        authorsPromises.push(
+                            fetch(`https://openlibrary.org${author.author.key}.json`)
+                                .then(response => response.ok ? response.json() : null)
+                                .catch(() => null)
+                        );
+                    }
+                });
+            }
+            
+            const authorsData = await Promise.all(authorsPromises);
+            const authorNames = authorsData
+                .filter(author => author && author.name)
+                .map(author => author.name);
+            
+            // Formatear y combinar toda la información
+            const formattedBook = {
+                id: bookId,
+                key: workData.key,
+                title: workData.title,
+                description: workData.description,
+                covers: workData.covers,
+                subjects: workData.subjects || [],
+                first_publish_date: workData.first_publish_date,
+                authors: workData.authors || [],
+                authorNames: authorNames.length > 0 ? authorNames : ['Autor desconocido'],
+                
+                // Información adicional que podría estar disponible
+                publishers: [],
+                publish_date: workData.first_publish_date,
+                isbn_13: [],
+                isbn_10: [],
+                number_of_pages: null,
+                languages: [],
+                
+                // Para compatibilidad con el formato de búsqueda
+                author_name: authorNames,
+                cover_i: workData.covers ? workData.covers[0] : null
+            };
+            
+            return formattedBook;
+            
         } catch (error) {
-            console.error('Error al cargar autor:', error);
-            return 'Autor desconocido';
+            throw new Error('No se pudo obtener la información del libro');
         }
-    });
+    }
     
-    try {
-        const authorNames = await Promise.all(authorPromises);
-        return authorNames.filter(name => name !== null);
-    } catch (error) {
-        console.error('Error en getAuthorsInfo:', error);
-        return ['Autor desconocido'];
+    /**
+     * Busca libros por término
+     * @param {string} query - Término de búsqueda
+     * @param {number} limit - Límite de resultados
+     * @returns {Promise<Array>} - Array de libros
+     */
+    async searchBooks(query, limit = 20) {
+        try {
+            const response = await fetch(`${OPENLIBRARY_API.SEARCH}?q=${encodeURIComponent(query)}&limit=${limit}`);
+            
+            if (!response.ok) {
+                throw new Error(`Error searching books: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.docs && Array.isArray(data.docs)) {
+                return data.docs.map(book => ({
+                    id: book.key ? book.key.replace('/works/', '') : null,
+                    title: book.title || 'Título desconocido',
+                    authors: book.author_name || ['Autor desconocido'],
+                    coverUrl: book.cover_i 
+                        ? `${OPENLIBRARY_API.COVERS}${book.cover_i}-M.jpg`
+                        : '/images/default-cover.jpg',
+                    coverId: book.cover_i,
+                    publishYear: book.first_publish_year,
+                    key: book.key
+                }));
+            }
+            
+            return [];
+        
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    /**
+     * Obtiene libros por categoría/subject
+     * @param {string} subject - Categoría/subject
+     * @param {number} limit - Límite de resultados
+     * @returns {Promise<Array>} - Array de libros
+     */
+    async getBooksBySubject(subject, limit = 20) {
+        try {
+            const response = await fetch(`${OPENLIBRARY_API.SUBJECTS}${subject}.json?limit=${limit}`);
+            
+            if (!response.ok) {
+                throw new Error(`Error fetching subject books: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.works && Array.isArray(data.works)) {
+                return data.works.map(book => ({
+                    id: book.key ? book.key.replace('/works/', '') : null,
+                    title: book.title || 'Título desconocido',
+                    authors: book.authors ? book.authors.map(a => a.name) : ['Autor desconocido'],
+                    coverUrl: book.cover_id 
+                        ? `${OPENLIBRARY_API.COVERS}${book.cover_id}-M.jpg`
+                        : '/images/default-cover.jpg',
+                    coverId: book.cover_id,
+                    publishYear: book.first_publish_year,
+                    key: book.key
+                }));
+            }
+            
+            return [];
+        
+        } catch (error) {
+            throw error;
+        }
     }
 }
 
-/**
- * Formatea los datos de un libro para su uso en la aplicación
- * @param {Object} book - Datos del libro de la API
- * @returns {Object} - Datos formateados
- */
-function formatBookData(book) {
-    // Obtener ID de portada si existe
-    const coverId = book.cover_id || (book.covers && book.covers.length > 0 ? book.covers[0] : null);
-    
-    // URL de la portada
-    const coverUrl = coverId 
-        ? `${OPENLIBRARY_API.COVER}${coverId}-M.jpg` 
-        : DEFAULT_COVER;
-    
-    // Extraer el ID único del trabajo
-    const workId = book.key ? book.key.split('/').pop() : '';
-    
-    return {
-        id: workId,
-        title: book.title || 'Título desconocido',
-        authors: book.authors ? book.authors.map(author => author.name || 'Autor desconocido') : ['Autor desconocido'],
-        coverUrl: coverUrl,
-        publishYear: book.first_publish_year || 'Año desconocido',
-        subjects: book.subject || []
-    };
-}
+// Crear instancia única
+const booksService = new BooksService();
 
 /**
- * Formatea los resultados de búsqueda
- * @param {Object} book - Datos del libro de la búsqueda
- * @returns {Object} - Datos formateados
- */
-function formatSearchResult(book) {
-    const coverId = book.cover_i;
-    const coverUrl = coverId 
-        ? `${OPENLIBRARY_API.COVER}${coverId}-M.jpg` 
-        : DEFAULT_COVER;
-    
-    // Extraer ID de trabajo si existe, o usar el primer ID de edición
-    let workId = '';
-    if (book.key) {
-        workId = book.key.replace('/works/', '');
-    } else if (book.edition_key && book.edition_key.length > 0) {
-        workId = book.edition_key[0];
-    }
-    
-    return {
-        id: workId,
-        title: book.title || 'Título desconocido',
-        authors: book.author_name || ['Autor desconocido'],
-        coverUrl: coverUrl,
-        publishYear: book.first_publish_year || 'Año desconocido',
-        subjects: book.subject || []
-    };
-}
-
-/**
- * Función para obtener servicios de libros
- * @returns {Object} - Servicios de libros
+ * Obtener la instancia del servicio de libros
  */
 function getBooksService() {
-    return {
-        searchBooks,
-        getBooksByCategory,
-        getBookDetails,
-        getAuthorsInfo
-    };
+    return booksService;
 }
 
-export { getBooksService };
+// Exportar para uso global
+if (typeof window !== 'undefined') {
+    window.booksService = booksService;
+    window.getBooksService = getBooksService;
+}
+
+export { getBooksService, booksService };

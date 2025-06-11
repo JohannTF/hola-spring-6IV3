@@ -23,11 +23,16 @@ public class ViewsController {
     public String profile() {
         return "my-profile";
     }
-
+    
     @GetMapping("/inicio")
     public String home() {
         return "inicio";
-    }    
+    }
+    
+    @GetMapping("/favorites")
+    public String favorites() {
+        return "favorites";
+    }
     
     // Cambiado a "/libro-detalle" para coincidir con la plantilla HTML
     @GetMapping("/libro-detalle")
