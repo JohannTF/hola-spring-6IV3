@@ -1,7 +1,7 @@
 package escom.ipn.hola_spring_6IV3.controllers;
 
-import escom.ipn.hola_spring_6IV3.dto.AddFavoriteRequest;
-import escom.ipn.hola_spring_6IV3.dto.FavoriteDTO;
+import escom.ipn.hola_spring_6IV3.domain.dto.FavoriteDTO;
+import escom.ipn.hola_spring_6IV3.domain.request.FavoriteRequest;
 import escom.ipn.hola_spring_6IV3.service.FavoriteService;
 import escom.ipn.hola_spring_6IV3.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class FavoriteController {
     @PostMapping
     public ResponseEntity<?> addToFavorites(
             @RequestHeader("Authorization") String token,
-            @RequestBody AddFavoriteRequest request) {
+            @RequestBody FavoriteRequest request) {
         try {
             String username = extractUsernameFromToken(token);
             FavoriteDTO favorite = favoriteService.addToFavorites(username, request);
@@ -112,7 +112,7 @@ public class FavoriteController {
     @PostMapping("/toggle")
     public ResponseEntity<?> toggleFavorite(
             @RequestHeader("Authorization") String token,
-            @RequestBody AddFavoriteRequest request) {
+            @RequestBody FavoriteRequest request) {
         try {
             String username = extractUsernameFromToken(token);
             boolean isNowFavorite = favoriteService.toggleFavorite(username, request);

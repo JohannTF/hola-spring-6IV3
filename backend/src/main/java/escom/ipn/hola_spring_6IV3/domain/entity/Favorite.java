@@ -1,6 +1,5 @@
-package escom.ipn.hola_spring_6IV3.entity;
+package escom.ipn.hola_spring_6IV3.domain.entity;
 
-import escom.ipn.hola_spring_6IV3.domain.entity.User;
 import jakarta.persistence.*;
 
 @Entity

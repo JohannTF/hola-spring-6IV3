@@ -1,4 +1,4 @@
-package escom.ipn.hola_spring_6IV3.dto;
+package escom.ipn.hola_spring_6IV3.domain.dto;
 
 import java.time.LocalDateTime;
 

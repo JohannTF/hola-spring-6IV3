@@ -1,9 +1,9 @@
 package escom.ipn.hola_spring_6IV3.service;
 
+import escom.ipn.hola_spring_6IV3.domain.dto.FavoriteDTO;
+import escom.ipn.hola_spring_6IV3.domain.entity.Favorite;
 import escom.ipn.hola_spring_6IV3.domain.entity.User;
-import escom.ipn.hola_spring_6IV3.dto.AddFavoriteRequest;
-import escom.ipn.hola_spring_6IV3.dto.FavoriteDTO;
-import escom.ipn.hola_spring_6IV3.entity.Favorite;
+import escom.ipn.hola_spring_6IV3.domain.request.FavoriteRequest;
 import escom.ipn.hola_spring_6IV3.repository.FavoriteRepository;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class FavoriteService {
      * Añade un libro a favoritos
      */
     @Transactional
-    public FavoriteDTO addToFavorites(String username, AddFavoriteRequest request) {
+    public FavoriteDTO addToFavorites(String username, FavoriteRequest request) {
         // Verificar si el usuario existe
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
@@ -92,7 +92,7 @@ public class FavoriteService {
      * Alterna el estado de favorito de un libro (añadir/eliminar)
      */
     @Transactional
-    public boolean toggleFavorite(String username, AddFavoriteRequest request) {
+    public boolean toggleFavorite(String username, FavoriteRequest request) {
         if (isBookInFavorites(username, request.getBookId())) {
             removeFromFavorites(username, request.getBookId());
             return false; // Eliminado de favoritos
