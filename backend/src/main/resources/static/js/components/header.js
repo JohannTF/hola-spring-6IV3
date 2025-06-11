@@ -1,6 +1,10 @@
 /**
- * Funciones para manejar el header global de la aplicación
+ * Componente de header global - Header común para toda la aplicación
  */
+
+import { logout } from '../services/authService.js';
+import { isAdmin } from '../services/userService.js';
+
 /**
  * Carga el header global en todas las páginas
  */
@@ -53,7 +57,7 @@ function loadGlobalHeader() {
     // Verificar si el usuario es admin
     checkAndShowAdminLink();
 
-    // Configurar el búsqueda en el header
+    // Configurar la búsqueda en el header
     setupHeaderSearch();
 
     // Configurar menú móvil
@@ -64,19 +68,12 @@ function loadGlobalHeader() {
  * Verifica si el usuario es admin y muestra el enlace de administración
  */
 function checkAndShowAdminLink() {
-    // Obtener información del usuario
-    getUserInfo()
-        .then(data => {
-            const user = data.usuario;
-            const adminNavItem = document.getElementById('admin-nav-item');
-            // Mostrar el enlace si el usuario es admin
-            if (user.role && user.role.name === 'ROLE_ADMIN' && adminNavItem) {
-                adminNavItem.style.display = 'block';
-            }
-        })
-        .catch(error => {
-            console.error('Error al verificar rol de usuario:', error);
-        });
+    isAdmin().then(admin => {
+        const adminNavItem = document.getElementById('admin-nav-item');
+        if (adminNavItem) {
+            adminNavItem.style.display = admin ? 'block' : 'none';
+        }
+    });
 }
 
 /**
@@ -85,22 +82,14 @@ function checkAndShowAdminLink() {
 function setupHeaderSearch() {
     const searchForm = document.getElementById('header-search-form');
     const searchInput = document.getElementById('header-search-input');
-
+    
     if (searchForm && searchInput) {
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const query = searchInput.value.trim();
             
+            const query = searchInput.value.trim();
             if (query) {
-                // Si estamos en la página de inicio, buscar allí
-                if (window.location.pathname === '/inicio') {
-                    // Buscar en la misma página usando la función de books.js
-                    searchBooks(query);
-                    searchInput.value = '';
-                } else {
-                    // Redirigir a la página de inicio con el parámetro de búsqueda
-                    window.location.href = `/inicio?search=${encodeURIComponent(query)}`;
-                }
+                window.location.href = `/inicio?search=${encodeURIComponent(query)}`;
             }
         });
     }
@@ -110,22 +99,14 @@ function setupHeaderSearch() {
  * Configura el menú móvil
  */
 function setupMobileMenu() {
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    const headerNav = document.querySelector('.header-nav');
-
-    if (mobileMenuToggle && headerNav) {
-        mobileMenuToggle.addEventListener('click', () => {
-            headerNav.classList.toggle('show');
-            
-            // Cambiar icono según estado
-            const icon = mobileMenuToggle.querySelector('i');
-            if (headerNav.classList.contains('show')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
+    const mobileToggle = document.getElementById('mobile-menu-toggle');
+    const nav = document.querySelector('.header-nav');
+    
+    if (mobileToggle && nav) {
+        mobileToggle.addEventListener('click', () => {
+            nav.classList.toggle('show-mobile');
         });
     }
 }
+
+export { loadGlobalHeader };

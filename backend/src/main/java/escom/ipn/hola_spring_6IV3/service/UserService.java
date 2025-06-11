@@ -8,12 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import escom.ipn.hola_spring_6IV3.dtos.UserDto;
+import escom.ipn.hola_spring_6IV3.domain.dto.UserDTO;
+import escom.ipn.hola_spring_6IV3.domain.entity.Role;
+import escom.ipn.hola_spring_6IV3.domain.entity.User;
 import escom.ipn.hola_spring_6IV3.exception.RoleNotFoundException;
 import escom.ipn.hola_spring_6IV3.exception.UserNotFoundException;
-import escom.ipn.hola_spring_6IV3.model.Role;
-import escom.ipn.hola_spring_6IV3.model.User;
-import escom.ipn.hola_spring_6IV3.repository.RoleRepository;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
@@ -56,7 +54,7 @@ public class UserService {
     /**
      * Obtiene todos los usuarios como DTOs (transferencia de datos)
      */
-    public List<UserDto> getAllUsersDto() {
+    public List<UserDTO> getAllUsersDto() {
         return userRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -65,8 +63,8 @@ public class UserService {
     /**
      * Convierte una entidad User a UserDto
      */
-    private UserDto convertToDto(User user) {
-        return UserDto.builder()
+    private UserDTO convertToDto(User user) {
+        return UserDTO.builder()
                 .username(user.getUsername())
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
@@ -83,8 +81,18 @@ public class UserService {
      * @return El usuario actualizado
      */
     @Transactional
-    public User updateUser(User user, UserDto updatedUserDto) {
+    public User updateUser(User user, UserDTO updatedUserDto) throws RoleNotFoundException {
         try {
+            // Actualizar el nombre de usuario si se proporciona
+            if (updatedUserDto.getUsername() != null && !updatedUserDto.getUsername().isEmpty()) {
+                // Verificar que el nuevo nombre de usuario no exista (a menos que sea el mismo)
+                if (!user.getUsername().equals(updatedUserDto.getUsername()) && 
+                    userRepository.findByUsername(updatedUserDto.getUsername()).isPresent()) {
+                    throw new RuntimeException("El nombre de usuario ya está en uso");
+                }
+                user.setUsername(updatedUserDto.getUsername());
+            }
+            
             // Actualizar datos básicos
             if (updatedUserDto.getFirstname() != null) {
                 user.setFirstname(updatedUserDto.getFirstname());
@@ -98,30 +106,7 @@ public class UserService {
 
             // Si hay un rol en la solicitud, actualizarlo
             if (updatedUserDto.getRole() != null && !updatedUserDto.getRole().isEmpty()) {
-                String roleName = "ROLE_" + updatedUserDto.getRole().toUpperCase();
-                
-                System.out.println("Buscando rol con nombre: " + roleName);
-                
-                // Listar todos los roles disponibles para depuración
-                List<String> allRoles = roleRepository.getAllRoleNames();
-                System.out.println("Roles disponibles en la base de datos: " + allRoles);
-                
-                // Verificar si hay duplicados para depuración
-                long roleCount = roleRepository.countByName(roleName);
-                if (roleCount > 1) {
-                    System.out.println("ADVERTENCIA: Se encontraron " + roleCount + " roles con el nombre: " + roleName);
-                    
-                    // Listar todos los roles duplicados para depuración
-                    List<Object[]> duplicateRoles = roleRepository.findDuplicateRoles();
-                    for (Object[] duplicate : duplicateRoles) {
-                        System.out.println("Rol duplicado: " + duplicate[0] + " - Cantidad: " + duplicate[1]);
-                    }
-                } else if (roleCount == 0) {
-                    throw new RoleNotFoundException(updatedUserDto.getRole());
-                }
-                
-                Role role = roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RoleNotFoundException(updatedUserDto.getRole()));
+                Role role = Role.fromString(updatedUserDto.getRole().toUpperCase());
                 user.setRole(role);
             }
 
@@ -135,10 +120,9 @@ public class UserService {
             
             return userRepository.save(user);
         } catch (Exception e) {
-            // Registrar cualquier excepción que ocurra
             System.err.println("Error al actualizar usuario: " + e.getMessage());
             e.printStackTrace();
-            throw e; // Re-lanzar para que sea manejado por el controlador
+            throw e;
         }
     }
 

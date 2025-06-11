@@ -1,4 +1,4 @@
-package escom.ipn.hola_spring_6IV3.model;
+package escom.ipn.hola_spring_6IV3.domain.entity;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,12 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -22,13 +21,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Genera automáticamente los métodos getter, setter, toString, equals y hashCode
 @Data
-// Proporciona un patrón de diseño Builder para la clase
 @Builder
-// Genera un constructor sin argumentos
 @NoArgsConstructor
-// Genera un constructor con un argumento para cada campo en la clase
 @AllArgsConstructor
 @Entity
 @Table(name = "user", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
@@ -48,8 +43,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     /**
@@ -61,9 +55,6 @@ public class User implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (role == null) {
-            throw new IllegalStateException("El usuario no tiene un rol asignado");
-        }
         return List.of(new SimpleGrantedAuthority(role.getName()));
     }
 

@@ -69,47 +69,112 @@
 }
 
 .action-buttons button {
-    background-color: var(--primary-color);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--white);
     border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
     cursor: pointer;
     font-size: 0.9em;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 .action-buttons button:hover {
-    background-color: var(--secondary-color);
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
-.action-buttons button:last-child {
-    background-color: var(--error-color);
-}
-
-.action-buttons button:last-child:hover {
-    background-color: var(--error-dark);
-}
-
-.add-user-button {
-    background-color: var(--primary-color);
+/* Estilos específicos para cada tipo de botón */
+.edit-btn, .save-btn, .cancel-btn, .delete-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--white);
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-size: 1em;
     cursor: pointer;
-    margin: 20px 0;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.edit-btn:hover, .save-btn:hover, .cancel-btn:hover, .delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.edit-btn {
+    background-color: #4caf50; /* Verde */
+}
+
+.edit-btn:hover {
+    background-color: #388e3c;
+}
+
+.delete-btn {
+    background-color: #f44336; /* Rojo */
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+.save-btn {
+    background-color: #2196f3; /* Azul */
+}
+
+.save-btn:hover {
+    background-color: #1976d2;
+}
+
+.cancel-btn {
+    background-color: #ff9800; /* Naranja */
+}
+
+.cancel-btn:hover {
+    background-color: #f57c00;
+}
+
+/* Botón para añadir usuario */
+.add-user-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 .add-user-button:hover {
-    background-color: var(--secondary-color);
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
+.add-user-button i {
+    font-size: 18px;
+}
+
+/* Contenedor de botones de acciones - asegurar flexbox */
+.actions-cell {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Modal */
@@ -121,99 +186,177 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
+    overflow: auto;
+    transition: all 0.3s ease-in-out;
 }
 
 .modal-content {
+    position: relative;
     background-color: var(--card-bg);
-    margin: auto     auto;
-    padding: 20px;
-    border-radius: 8px;
+    margin: 5% auto;
+    padding: 0;
     width: 80%;
     max-width: 500px;
-    box-shadow: 0 4px 8px var(--shadow-color);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(0);
+    transition: transform 0.4s ease-in-out;
+    animation: modalFadeIn 0.5s;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--accent-color);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    padding: 20px 25px;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 12px 12px 0 0;
 }
 
 .modal-title {
-    color: var(--primary-color);
-    font-size: 1.5em;
     margin: 0;
-}
-
-[data-theme="dark"] .modal-title {
-    color: var(--header-text);
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: white;
 }
 
 .close-button {
-    font-size: 1.5em;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-button:hover {
+    color: #ffcc00;
+}
+
+#addUserForm {
+    padding: 25px;
+}
+
+#addUserForm .form-group {
+    margin-bottom: 20px;
+}
+
+#addUserForm label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
     color: var(--text-color);
-    border: none;
-    background: none;
 }
 
-.form-group {
-    margin-bottom: 15px;
+#addUserForm input,
+#addUserForm select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.form-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.form-buttons button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1em;
-}
-
-.cancel-button {
-    background-color: var(--error-color);
-    color: var(--white);
-}
-
-.submit-button {
-    background-color: var(--primary-color);
-    color: var(--white);
+#addUserForm input:focus,
+#addUserForm select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+    outline: none;
 }
 
 .password-container {
+    position: relative;
     display: flex;
     align-items: center;
 }
 
 .password-container input {
     flex: 1;
+    padding-right: 40px;
 }
 
 .password-container i {
+    position: absolute;
+    right: 12px;
     cursor: pointer;
-    margin-left: 5px;
+    color: var(--secondary-color);
+    transition: color 0.3s;
 }
 
-input, select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 1em;
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+.password-container i:hover {
+    color: var(--primary-color);
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.cancel-button,
+.submit-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.submit-button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.cancel-button:hover,
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.cancel-button:hover {
+    background-color: #d32f2f;
+}
+
+.submit-button:hover {
+    background-color: #1976D2;
+}
+
+/* Estilo para las filas de la tabla */
+.admin-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.admin-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .admin-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Responsive */

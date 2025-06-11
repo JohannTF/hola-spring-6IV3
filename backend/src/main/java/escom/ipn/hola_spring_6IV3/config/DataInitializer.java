@@ -1,8 +1,7 @@
 package escom.ipn.hola_spring_6IV3.config;
 
-import escom.ipn.hola_spring_6IV3.model.Role;
-import escom.ipn.hola_spring_6IV3.model.User;
-import escom.ipn.hola_spring_6IV3.repository.RoleRepository;
+import escom.ipn.hola_spring_6IV3.domain.entity.Role;
+import escom.ipn.hola_spring_6IV3.domain.entity.User;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -13,14 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner initDatabase(UserRepository userRepository, RoleRepository roleRepository) {
+    CommandLineRunner initDatabase(UserRepository userRepository) {
         return args -> {
             // Verificar si ya existe el usuario administrador
             if (userRepository.findByUsername("sudo").isEmpty()) {
-                // Buscar el rol ADMIN
-                Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                        .orElseThrow(() -> new RuntimeException("Rol ADMIN no encontrado"));
-
                 // Crear el usuario administrador
                 User user = User.builder()
                         .username("sudo")
@@ -28,7 +23,7 @@ public class DataInitializer {
                         .firstname("super")
                         .country("not defined")
                         .password(new BCryptPasswordEncoder().encode("password"))
-                        .role(adminRole)
+                        .role(Role.ROLE_ADMIN)
                         .build();
                 userRepository.save(user);
                 System.out.println("Usuario administrador creado");

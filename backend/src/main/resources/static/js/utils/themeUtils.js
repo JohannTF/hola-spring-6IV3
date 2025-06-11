@@ -1,5 +1,5 @@
 /**
- * Funciones para manejar el tema de la aplicación
+ * Módulo de tema - Funciones para manejar el tema de la aplicación
  */
 
 /**
@@ -51,23 +51,19 @@ function setupThemeListener() {
         themeToggle.addEventListener('click', () => {
             // Obtener el tema actual
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            
-            // Cambiar al tema opuesto
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             
-            // Aplicar el nuevo tema
+            // Cambiar tema
             document.documentElement.setAttribute('data-theme', newTheme);
             
-            // Guardar preferencia
+            // Guardar la preferencia
             localStorage.setItem('theme', newTheme);
             
-            // Actualizar ícono
-            const iconElement = themeToggle.querySelector('i');
-            iconElement.classList.remove('fa-moon', 'fa-sun');
-            iconElement.classList.add(newTheme === 'dark' ? 'fa-sun' : 'fa-moon');
-            
-            // Mostrar mensaje
-            showToast(`Tema ${newTheme === 'dark' ? 'oscuro' : 'claro'} activado`, 'success');
+            // Cambiar el ícono del botón
+            const icon = themeToggle.querySelector('i');
+            if (icon) {
+                icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
         });
     }
 }
@@ -95,5 +91,4 @@ function applyTheme() {
     }
 }
 
-// Inicializar tema cuando el DOM esté cargado
-document.addEventListener('DOMContentLoaded', initTheme);
+export { initTheme };

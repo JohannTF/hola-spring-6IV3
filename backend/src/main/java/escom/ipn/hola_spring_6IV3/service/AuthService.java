@@ -6,15 +6,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import escom.ipn.hola_spring_6IV3.dtos.JwtResponse;
-import escom.ipn.hola_spring_6IV3.dtos.LoginRequest;
-import escom.ipn.hola_spring_6IV3.dtos.RegisterRequest;
+import escom.ipn.hola_spring_6IV3.domain.entity.Role;
+import escom.ipn.hola_spring_6IV3.domain.entity.User;
+import escom.ipn.hola_spring_6IV3.domain.request.auth.LoginRequest;
+import escom.ipn.hola_spring_6IV3.domain.request.auth.RegisterRequest;
+import escom.ipn.hola_spring_6IV3.domain.response.JwtResponse;
 import escom.ipn.hola_spring_6IV3.exception.UserAlreadyExistsException;
 import escom.ipn.hola_spring_6IV3.exception.RoleNotFoundException;
 import escom.ipn.hola_spring_6IV3.exception.UserNotFoundException;
-import escom.ipn.hola_spring_6IV3.model.Role;
-import escom.ipn.hola_spring_6IV3.model.User;
-import escom.ipn.hola_spring_6IV3.repository.RoleRepository;
 import escom.ipn.hola_spring_6IV3.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,6 @@ public class AuthService {
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
@@ -37,9 +35,9 @@ public class AuthService {
      * Registra un nuevo usuario y genera su token JWT
      * 
      * @param request Datos del usuario a registrar
-     * @return JwtResponse con el token de autenticación
-     * @throws UserAlreadyExistsException cuando el usuario ya existe
-     * @throws RoleNotFoundException cuando el rol solicitado no existe
+     * @return JwtResponse con el token de autenticacións
+     * @throws RoleNotFoundException
+     * @throws UserAlreadyExistsException
      */
     public JwtResponse registerUser(RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -47,8 +45,7 @@ public class AuthService {
         }
 
         // Obtener el rol correspondiente
-        Role role = roleRepository.findByName("ROLE_" + request.getRole().toUpperCase())
-                .orElseThrow(() -> new RoleNotFoundException(request.getRole()));
+        Role role = Role.fromString(request.getRole());
 
         // Crear el nuevo usuario
         User user = User.builder()
@@ -76,7 +73,7 @@ public class AuthService {
      * 
      * @param request Credenciales de inicio de sesión
      * @return JwtResponse con el token de autenticación
-     * @throws UserNotFoundException cuando el usuario no existe
+     * @throws UserNotFoundException
      */
     public JwtResponse loginUser(LoginRequest request) {
         authenticationManager.authenticate(

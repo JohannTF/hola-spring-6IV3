@@ -54,8 +54,18 @@ public class JwtTokenProvider {
      */
     @SuppressWarnings("deprecation")
     private String getToken(Map<String, Object> extraClaims, UserDetails user) {
+        // Añadir roles a los claims
+        Map<String, Object> allClaims = new HashMap<>(extraClaims);
+        
+        // Agregar roles explícitamente al token para facilitar la verificación en el frontend
+        if (user.getAuthorities() != null && !user.getAuthorities().isEmpty()) {
+            allClaims.put("roles", user.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .toArray());
+        }
+        
         return Jwts.builder()
-            .setClaims(extraClaims)
+            .setClaims(allClaims)
             .setSubject(user.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMills))

@@ -1,4 +1,4 @@
-package escom.ipn.hola_spring_6IV3.auth;
+package escom.ipn.hola_spring_6IV3.controllers.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import escom.ipn.hola_spring_6IV3.dtos.LoginRequest;
-import escom.ipn.hola_spring_6IV3.dtos.RegisterRequest;
-import escom.ipn.hola_spring_6IV3.dtos.JwtResponse;
+import escom.ipn.hola_spring_6IV3.domain.request.auth.LoginRequest;
+import escom.ipn.hola_spring_6IV3.domain.request.auth.RegisterRequest;
+import escom.ipn.hola_spring_6IV3.domain.response.JwtResponse;
 import escom.ipn.hola_spring_6IV3.exception.UserAlreadyExistsException;
 import escom.ipn.hola_spring_6IV3.exception.RoleNotFoundException;
 import escom.ipn.hola_spring_6IV3.exception.UserNotFoundException;
