@@ -15,6 +15,11 @@ La plataforma permite a los usuarios descubrir y explorar algunos libros organiz
 - [⚙️ Instalación](#️-instalación)
 - [Usuario Admin por Defecto](#usuario-admin-por-defecto)
 - [APIs Externas](#apis-externas)
+- [🖼️ Capturas de Pantalla](#️-capturas-de-pantalla)
+  - [Inicio](#inicio)
+  - [Libros](#libros)
+  - [Detalle, búsqueda y favoritos](#detalle-búsqueda-y-favoritos)
+  - [Perfil](#perfil)
 
 ## ✨ Características Implementadas (Hasta el momento)
 
@@ -215,3 +220,26 @@ La aplicación utiliza la API pública de OpenLibrary para obtener información 
 - Portadas de libros: `https://covers.openlibrary.org/b/id/`
 - Información de autores: `https://openlibrary.org/authors/`
 - Categorías: `https://openlibrary.org/subjects/`
+
+
+## 🖼️ Capturas de Pantalla
+
+### Inicio
+
+![Inicio - tema claro](screenshots/project/home_white.png)
+![Inicio - tema oscuro](screenshots/project/home_dark.png)
+
+### Libros
+
+![Lista de libros - tema claro](screenshots/project/books_list_white.png)
+![Lista de libros - tema oscuro](screenshots/project/books_list_dark.png)
+
+### Detalle, búsqueda y favoritos
+
+![Detalle de libro](screenshots/project/detailed_book_info_white.png)
+![Búsqueda](screenshots/project/search_white.png)
+![Favoritos](screenshots/project/favorites_white.png)
+
+### Perfil
+
+![Perfil de usuario - tema oscuro](screenshots/project/profile_info_dark.png)
